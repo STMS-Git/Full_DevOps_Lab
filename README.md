@@ -96,6 +96,3 @@ test/
 - `npm run lint` – ESLint check
 
 Enjoy the lab!
-#   F u l l _ D e v O p s _ L a b 
- 
- 
