@@ -1,3 +1,4 @@
+# Workflow for testing and linting
 name: CI
 
 on:
