@@ -1,0 +1,46 @@
+/* eslint-disable camelcase */
+import express from 'express'
+import TrainingSession from '../../models/TrainingSession'
+import { findAllAvailableFacilities } from '../../services/services.facility'
+import { facilities } from '../../data/facilities'
+
+const router = express.Router()
+const trainings = []
+router.get('/trainings/available-facilities', (request, response) => {
+  if (!request.user || request.user.role !== 'coach') {
+    return response.status(403).json({ message: 'Coaches are the only ones that can schedule sessions' })
+  }
+
+  const { date_event, slot_event } = request.query
+  if (!slot_event || !date_event) {
+    return response.status(400).json({ message: 'The date and slot of the events are needed' })
+  }
+
+  if (findAllAvailableFacilities(facilities, slot_event, date_event).length === 0) {
+    return response.json({ message: 'No facility for this slot', facilities: [] })
+  }
+  response.json({ facilities: findAllAvailableFacilities(facilities, slot_event, date_event) })
+})
+
+router.post('/trainings', (request, response) => {
+  if (!request.user || request.user.role !== 'coach') {
+    return response.status(403).json({ message: 'Coaches are the only ones that can schedule sessions' })
+  }
+
+  const { date_event, slot_event, facilityID } = request.body
+
+  if (!date_event || !slot_event || typeof facilityID !== 'number') {
+    return response.status(400).json({ message: "The date and slot of the events and the facility's ID are needed" })
+  }
+
+  const facility = findAllAvailableFacilities(trainings, slot_event, date_event).find(f => f.id === facilityID)
+  if (!facility) {
+    return response.status(400).json({ message: "This facility can't be chosen" })
+  }
+
+  const newevent = new TrainingSession({ date_event, slot_event, facilityId_event: facilityID, coachId_event: request.user.id })
+  trainings.push(newevent)
+  response.status(201).json(newevent)
+})
+
+export default router
