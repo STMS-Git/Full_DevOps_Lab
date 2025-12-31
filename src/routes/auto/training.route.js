@@ -2,11 +2,10 @@
 import express from 'express'
 import TrainingSession from '../../models/TrainingSession'
 import { findAllAvailableFacilities } from '../../services/services.facility'
-import { facilities } from '../../data/facilities'
 
 const router = express.Router()
 const trainings = []
-router.get('/trainings/available-facilities', (request, response) => {
+router.get('/available-facilities', (request, response) => {
   if (!request.user || request.user.role !== 'coach') {
     return response.status(403).json({ message: 'Coaches are the only ones that can schedule sessions' })
   }
@@ -16,13 +15,15 @@ router.get('/trainings/available-facilities', (request, response) => {
     return response.status(400).json({ message: 'The date and slot of the events are needed' })
   }
 
-  if (findAllAvailableFacilities(facilities, slot_event, date_event).length === 0) {
+  const available = findAllAvailableFacilities(trainings, slot_event, date_event)
+  if (available.length === 0) {
     return response.json({ message: 'No facility for this slot', facilities: [] })
+  } else {
+    return response.json({ facilities: available })
   }
-  response.json({ facilities: findAllAvailableFacilities(facilities, slot_event, date_event) })
 })
 
-router.post('/trainings', (request, response) => {
+router.post('/', (request, response) => {
   if (!request.user || request.user.role !== 'coach') {
     return response.status(403).json({ message: 'Coaches are the only ones that can schedule sessions' })
   }
@@ -38,7 +39,7 @@ router.post('/trainings', (request, response) => {
     return response.status(400).json({ message: "This facility can't be chosen" })
   }
 
-  const newevent = new TrainingSession({ date_event, slot_event, facilityId_event: facilityID, coachId_event: request.user.id })
+  const newevent = new TrainingSession({ date_event, slot_event, facilityID_event: facilityID, coachId_event: request.user.id })
   trainings.push(newevent)
   response.status(201).json(newevent)
 })
