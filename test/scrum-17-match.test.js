@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import app from '../src/app.js'
 
-describe('SCRUM-51-schedule-match-session', () => {
+describe('SCRUM-17-schedule-match-session', () => {
   it('returns the free facilities', async () => {
     const response = await request(app).get('/matches/available-facilities')
       .query({ date_event: '2024-09-02', slot_event: '18:00-20:00' })
