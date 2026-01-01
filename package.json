@@ -19,7 +19,7 @@
     "mongodb": "^7.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "^8.57.1",
     "@vitest/coverage-v8": "^4.0.13",
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",

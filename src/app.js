@@ -10,8 +10,9 @@ import { errorHandler } from './utils/errorHandler.js'
 
 // Import des routes
 import versionRoute from './routes/auto/version.route.js'
-import infoRoute from './routes/auto/info.route.js'// À décommenter plus tard
-import boomRoute from './routes/auto/boom.route.js'// À décommenter plus tard
+import infoRoute from './routes/auto/info.route.js'
+import boomRoute from './routes/auto/boom.route.js'
+import matchRoute from './routes/auto/match.route.js'
 
 const app = express()
 
@@ -21,8 +22,9 @@ app.get('/health', (_req, res) => res.status(200).send('OK'))
 
 // Connecter les routes
 app.use('/version', versionRoute)
-app.use('/info', infoRoute) // À décommenter plus tard
-app.use('/boom', boomRoute) // À décommenter plus tard
+app.use('/info', infoRoute)
+app.use('/boom', boomRoute)
+app.use('/matches', matchRoute)
 
 // Global error middleware last
 app.use(errorHandler)
