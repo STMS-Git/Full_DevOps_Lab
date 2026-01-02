@@ -1,10 +1,15 @@
 /* eslint-disable camelcase */
 import express from 'express'
 import TrainingSession from '../../models/TrainingSession'
-import { findAllAvailableFacilities } from '../../services/services.facility'
 
 const router = express.Router()
 const trainings = []
+
+function findAllAvailableFacilities (list_events, slot, date) {
+  const IDsbusyFacilities = list_events.filter(e => e.slot_event === slot && e.date_event === date).map(e => e.facilityID_event)
+  return facilities.filter(f => !IDsbusyFacilities.includes(f.id))
+}
+
 router.get('/available-facilities', (request, response) => {
   if (!request.user || request.user.role !== 'coach') {
     return response.status(403).json({ message: 'Coaches are the only ones that can schedule sessions' })
