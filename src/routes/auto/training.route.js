@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import express from 'express'
+import { facilities } from '../../data/facilities'
 import TrainingSession from '../../models/TrainingSession'
 
 const router = express.Router()
