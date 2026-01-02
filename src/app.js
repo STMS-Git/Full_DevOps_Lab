@@ -13,6 +13,7 @@ import versionRoute from './routes/auto/version.route.js'
 import infoRoute from './routes/auto/info.route.js'// À décommenter plus tard
 import boomRoute from './routes/auto/boom.route.js'// À décommenter plus tard
 import matchRoute from './routes/auto/match.route.js'
+import trainingRoute from './routes/auto/training.route.js'
 
 const app = express()
 
@@ -44,6 +45,7 @@ app.use('/version', versionRoute)
 app.use('/info', infoRoute) // À décommenter plus tard
 app.use('/boom', boomRoute) // À décommenter plus tard
 app.use('/matches', matchRoute)
+app.use('/trainings', trainingRoute)
 
 // Global error middleware last
 app.use(errorHandler)
