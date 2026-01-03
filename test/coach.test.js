@@ -1,90 +1,159 @@
-/* eslint-env node */
-import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import app from '../src/app.js'
+import { describe, it, expect, beforeEach } from 'vitest'
+import Coach from '../src/models/Coach.js'
 
-describe('Coach Routes', () => {
-  describe('GET /coaches', () => {
-    it('should return coaches response', { timeout: 5000 }, async () => {
-      const response = await request(app)
-        .get('/coaches')
-        .timeout(3000)
-        .expect('Content-Type', /json/)
+describe('Coach CRUD Operations', () => {
+  let coachId
 
-      expect(response.body).toBeDefined()
-    })
+  beforeEach(async () => {
+    await Coach.deleteMany({})
   })
 
+  // ========== CREATE ==========
   describe('POST /coaches', () => {
     it('should return 400 if firstName is missing', async () => {
-      const invalidCoach = {
-        lastName: 'Dupont',
-        email: 'jean.dupont@example.com'
-      }
-
       const response = await request(app)
         .post('/coaches')
-        .timeout(1000)
-        .send(invalidCoach)
+        .send({ lastName: 'Dupont', email: 'jean@example.com' })
         .expect(400)
 
-      expect(response.body).toHaveProperty('success')
       expect(response.body.success).toBe(false)
     })
 
-    it('should accept valid coach data', async () => {
-      const validCoach = {
-        firstName: 'Jean',
-        lastName: 'Dupont',
-        email: 'jean.dupont@example.com',
-        specialization: 'Defense',
-        experience: 10
-      }
-
+    it('should create coach with valid data', async () => {
       const response = await request(app)
         .post('/coaches')
-        .timeout(1000)
-        .send(validCoach)
+        .send({
+          firstName: 'Jean',
+          lastName: 'Dupont',
+          email: 'jean@example.com'
+        })
+        .expect(201)
 
-      expect(response.body).toBeDefined()
+      expect(response.body.success).toBe(true)
+      expect(response.body.data.firstName).toBe('Jean')
+      expect(response.body.data.email).toBe('jean@example.com')
+      coachId = response.body.data._id
     })
   })
 
+  // ========== READ (LIST) ==========
+  describe('GET /coaches', () => {
+    beforeEach(async () => {
+      await Coach.create([
+        { firstName: 'Marie', lastName: 'Martin', email: 'marie@example.com' },
+        { firstName: 'Pierre', lastName: 'Pierre', email: 'pierre@example.com' }
+      ])
+    })
+
+    it('should return all coaches', async () => {
+      const response = await request(app)
+        .get('/coaches')
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+      expect(Array.isArray(response.body.data)).toBe(true)
+      expect(response.body.data.length).toBe(2)
+    })
+  })
+
+  // ========== READ (BY ID) ==========
   describe('GET /coaches/:id', () => {
+    beforeEach(async () => {
+      const coach = await Coach.create({
+        firstName: 'Luc',
+        lastName: 'Bernard',
+        email: 'luc@example.com'
+      })
+      coachId = coach._id.toString()
+    })
+
+    it('should return 404 if coach not found', async () => {
+      const response = await request(app)
+        .get('/coaches/507f1f77bcf86cd799439011')
+        .expect(404)
+
+      expect(response.body.success).toBe(false)
+    })
+
     it('should return coach by id', async () => {
       const response = await request(app)
-        .get('/coaches/invalid-id')
-        .timeout(1000)
-        .expect('Content-Type', /json/)
+        .get(`/coaches/${coachId}`)
+        .expect(200)
 
-      expect(response.body).toBeDefined()
+      expect(response.body.success).toBe(true)
+      expect(response.body.data._id).toBe(coachId)
+      expect(response.body.data.firstName).toBe('Luc')
     })
   })
 
+  // ========== UPDATE ==========
   describe('PUT /coaches/:id', () => {
-    it('should update coach', async () => {
-      const updatedCoach = {
-        firstName: 'Pierre'
-      }
+    beforeEach(async () => {
+      const coach = await Coach.create({
+        firstName: 'Jean',
+        lastName: 'Old',
+        email: 'jeanold@example.com'
+      })
+      coachId = coach._id.toString()
+    })
 
+    it('should return 404 if coach not found', async () => {
       const response = await request(app)
-        .put('/coaches/invalid-id')
-        .timeout(1000)
-        .send(updatedCoach)
-        .expect('Content-Type', /json/)
+        .put('/coaches/507f1f77bcf86cd799439011')
+        .send({ firstName: 'Updated' })
+        .expect(404)
 
-      expect(response.body).toBeDefined()
+      expect(response.body.success).toBe(false)
+    })
+
+    it('should update coach successfully', async () => {
+      const response = await request(app)
+        .put(`/coaches/${coachId}`)
+        .send({
+          firstName: 'Jacques',
+          lastName: 'New'
+        })
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data.firstName).toBe('Jacques')
+      expect(response.body.data.lastName).toBe('New')
     })
   })
 
+  // ========== DELETE ==========
   describe('DELETE /coaches/:id', () => {
-    it('should delete coach', async () => {
-      const response = await request(app)
-        .delete('/coaches/invalid-id')
-        .timeout(1000)
-        .expect('Content-Type', /json/)
+    beforeEach(async () => {
+      const coach = await Coach.create({
+        firstName: 'Anna',
+        lastName: 'Delete',
+        email: 'anna@example.com'
+      })
+      coachId = coach._id.toString()
+    })
 
-      expect(response.body).toBeDefined()
+    it('should return 404 if coach not found', async () => {
+      const response = await request(app)
+        .delete('/coaches/507f1f77bcf86cd799439011')
+        .expect(404)
+
+      expect(response.body.success).toBe(false)
+    })
+
+    it('should delete coach successfully', async () => {
+      const response = await request(app)
+        .delete(`/coaches/${coachId}`)
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+
+      const checkResponse = await request(app)
+        .get(`/coaches/${coachId}`)
+        .expect(404)
+
+      expect(checkResponse.body.success).toBe(false)
     })
   })
 })
