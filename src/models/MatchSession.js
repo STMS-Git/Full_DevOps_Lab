@@ -1,15 +1,58 @@
-/* eslint-disable camelcase */
-import crypto from 'crypto'
+import mongoose from 'mongoose'
 
-export default class MatchSession {
-  constructor ({ date_event, slot_event, facilityID_event, coachId_event, teamID_event }) {
-    this.id = crypto.randomUUID()
-    this.type_event = 'match'
-    this.date_event = date_event
-    this.slot_event = slot_event
-    this.facilityID_event = facilityID_event
-    this.coachId_event = coachId_event
-    this.teamID_event = teamID_event
-    this.event_created_At = new Date()
+const matchSessionSchema = new mongoose.Schema(
+  {
+    // Type d'événement
+    eventType: {
+      type: String,
+      enum: ['match', 'training'], // Seulement ces deux valeurs
+      default: 'match',
+      required: true
+    },
+
+    // Date de l'événement
+    eventDate: {
+      type: Date,
+      required: true
+    },
+
+    // Créneau horaire
+    eventSlot: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 1,
+      maxlength: 50
+    },
+
+    // Clé étrangère vers Facility
+    facilityId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Facility',
+      required: true
+    },
+
+    // Clé étrangère vers Coach
+    coachId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Coach',
+      required: true
+    },
+
+    // Clé étrangère vers Team
+    teamId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team',
+      required: true
+    }
+
+  },
+  {
+    timestamps: true,
+    collection: 'matchSessions'
   }
-}
+)
+
+const MatchSession = mongoose.model('MatchSession', matchSessionSchema)
+
+export default MatchSession
