@@ -1,5 +1,8 @@
 import express from 'express'
 import MatchSession from '../../models/MatchSession.js'
+import Facility from '../../models/Facility.js'
+import Coach from '../../models/Coach.js'
+import Team from '../../models/Team.js'
 
 const router = express.Router()
 
@@ -63,6 +66,32 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields'
+      })
+    }
+    // Vérifier que la facility existe
+    const facility = await Facility.findById(facilityId)
+    if (!facility) {
+      return res.status(404).json({
+        success: false,
+        message: `Facility with ID ${facilityId} not found`
+      })
+    }
+
+    // Vérifier que le coach existe
+    const coach = await Coach.findById(coachId)
+    if (!coach) {
+      return res.status(404).json({
+        success: false,
+        message: `Coach with ID ${coachId} not found`
+      })
+    }
+
+    // Vérifier que la team existe
+    const team = await Team.findById(teamId)
+    if (!team) {
+      return res.status(404).json({
+        success: false,
+        message: `Team with ID ${teamId} not found`
       })
     }
 
