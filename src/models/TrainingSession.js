@@ -13,13 +13,7 @@ const trainingSessionSchema = new mongoose.Schema(
     // Date de la séance
     eventDate: {
       type: Date,
-      required: true,
-      validate: {
-        validator: function (value) {
-          return value > new Date() // La date doit être dans le futur
-        },
-        message: 'La date de la séance doit être dans le futur'
-      }
+      required: true
     },
 
     // Créneau horaire (ex: "14h00-15h30")
@@ -92,13 +86,6 @@ const trainingSessionSchema = new mongoose.Schema(
     isMandatory: {
       type: Boolean,
       default: false
-    },
-
-    // Date de création
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      immutable: true
     }
   },
   {

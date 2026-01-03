@@ -13,13 +13,7 @@ const matchSessionSchema = new mongoose.Schema(
     // Date de l'événement
     eventDate: {
       type: Date,
-      required: true,
-      validate: {
-        validator: function (value) {
-          return value > new Date() // La date doit être dans le futur
-        },
-        message: 'La date du match doit être dans le futur'
-      }
+      required: true
     },
 
     // Créneau horaire
@@ -50,14 +44,8 @@ const matchSessionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
       required: true
-    },
-
-    // Date de création
-    createdAt: {
-      type: Date,
-      default: Date.now,
-      immutable: true
     }
+
   },
   {
     timestamps: true,
