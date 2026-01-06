@@ -20,6 +20,7 @@ import coachRoute from './routes/auto/coach.route.js'
 import teamRoute from './routes/auto/team.route.js'
 import matchSessionRoute from './routes/auto/matchSession.route.js'
 import trainingSessionRoute from './routes/auto/trainingSession.route.js'
+import authRoute from './routes/auto/auth.route.js'
 
 const app = express()
 
@@ -59,6 +60,7 @@ app.use('/coaches', coachRoute)
 app.use('/teams', teamRoute)
 app.use('/matchSessions', matchSessionRoute)
 app.use('/trainingSessions', trainingSessionRoute)
+app.use('/auth', authRoute)
 
 // Global error middleware last
 app.use(errorHandler)
