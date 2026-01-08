@@ -28,4 +28,29 @@ describe('errorHandler', () => {
     expect(res.statusCode).toBe(418)
     expect(res.body).toEqual({ error: true, message: 'teapot' })
   })
+
+  it('treats Mongoose ValidationError', () => {
+    const response = makeRes()
+    const err = { name: 'ValidationError', errors: { field1: { message: 'Field1 required' }, field2: { message: 'Field2 too short' } } }
+
+    errorHandler(err, {}, response, () => {})
+    expect(response.statusCode).toBe(400)
+    expect(response.body).toEqual({ error: true, message: 'Validation error', details: ['Field1 required', 'Field2 too short'] })
+  })
+
+  it('treats Mongoose CastError', () => {
+    const response = makeRes()
+    const err = { name: 'CastError' }
+    errorHandler(err, {}, response, () => {})
+    expect(response.statusCode).toBe(400)
+    expect(response.body).toEqual({ error: true, message: 'Invalid ID format' })
+  })
+
+  it('treats duplicate error', () => {
+    const response = makeRes()
+    const err = { code: 11000, keyPattern: { email: 1 } }
+    errorHandler(err, {}, response, () => {})
+    expect(response.statusCode).toBe(409)
+    expect(response.body).toEqual({ error: true, message: 'Duplicate entry', field: 'email' })
+  })
 })

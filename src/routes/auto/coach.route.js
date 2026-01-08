@@ -46,13 +46,14 @@ router.post('/', async (req, res, next) => {
       firstName,
       lastName,
       email,
+      phoneNumber,
       specialization = 'Football',
       experience = 0,
       isActive = true
     } = req.body
 
     // Validation basique
-    if (!firstName || !lastName || !email) {
+    if (!firstName || !lastName || !email || !phoneNumber) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields: firstName, lastName, email'
@@ -64,6 +65,7 @@ router.post('/', async (req, res, next) => {
       firstName,
       lastName,
       email,
+      phoneNumber,
       specialization,
       experience,
       isActive

@@ -40,12 +40,17 @@ const matchSessionSchema = new mongoose.Schema(
     },
 
     // Clé étrangère vers Team
-    teamId: {
+    team1Id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
-      required: true
-    }
+      required: function () { return this.eventType === 'match' }
+    },
 
+    team2Id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Team',
+      required: function () { return this.eventType === 'match' }
+    }
   },
   {
     timestamps: true,

@@ -1,4 +1,5 @@
 import express from 'express'
+import mongoose from 'mongoose'
 import MatchSession from '../../models/MatchSession.js'
 import Facility from '../../models/Facility.js'
 import Coach from '../../models/Coach.js'
@@ -6,116 +7,87 @@ import Team from '../../models/Team.js'
 
 const router = express.Router()
 
-// GET /matchSessions - Récupérer tous les matchs
+// GET /matchSessions
 router.get('/', async (req, res, next) => {
   try {
     const matches = await MatchSession.find()
       .populate('facilityId')
       .populate('coachId')
-      .populate('teamId')
+      .populate('team1Id')
+      .populate('team2Id')
       .sort({ eventDate: 1 })
 
-    res.json({
-      success: true,
-      count: matches.length,
-      data: matches
-    })
+    res.json({ success: true, count: matches.length, data: matches })
   } catch (error) {
     next(error)
   }
 })
 
-// GET /matchSessions/:id - Récupérer un match par ID
+// GET /matchSessions/:id - Receive a match with an ID
 router.get('/:id', async (req, res, next) => {
   try {
     const match = await MatchSession.findById(req.params.id)
       .populate('facilityId')
       .populate('coachId')
-      .populate('teamId')
+      .populate('team1Id')
+      .populate('team2Id')
 
     if (!match) {
-      return res.status(404).json({
-        success: false,
-        message: 'Match not found'
-      })
+      return res.status(404).json({ success: false, message: 'Match not found' })
     }
 
-    res.json({
-      success: true,
-      data: match
-    })
+    res.json({ success: true, data: match })
   } catch (error) {
     next(error)
   }
 })
 
-// POST /matchSessions - Créer un nouveau match
+// POST /matchSessions - Create a new match session
 router.post('/', async (req, res, next) => {
   try {
-    const {
-      eventDate,
-      eventSlot,
-      eventType = 'match',
-      facilityId,
-      coachId,
-      teamId
-    } = req.body
+    const { eventDate, eventSlot, eventType = 'match', facilityId, coachId, team1Id, team2Id } = req.body
 
-    // Validation basique
-    if (!eventDate || !eventSlot || !facilityId || !coachId || !teamId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields'
-      })
-    }
-    // Vérifier que la facility existe
-    const facility = await Facility.findById(facilityId)
-    if (!facility) {
-      return res.status(404).json({
-        success: false,
-        message: `Facility with ID ${facilityId} not found`
-      })
+    if (!eventDate || !eventSlot) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' })
     }
 
-    // Vérifier que le coach existe
-    const coach = await Coach.findById(coachId)
-    if (!coach) {
-      return res.status(404).json({
-        success: false,
-        message: `Coach with ID ${coachId} not found`
-      })
+    if (!facilityId) {
+      return res.status(404).json({ success: false, message: 'The facility with the ID undefined has not been found' })
+    }
+    if (!mongoose.Types.ObjectId.isValid(facilityId) || !(await Facility.findById(facilityId))) {
+      return res.status(404).json({ success: false, message: `The facility with the ID ${facilityId} has not been found` })
     }
 
-    // Vérifier que la team existe
-    const team = await Team.findById(teamId)
-    if (!team) {
-      return res.status(404).json({
-        success: false,
-        message: `Team with ID ${teamId} not found`
-      })
+    if (!coachId) {
+      return res.status(404).json({ success: false, message: 'The coach with the ID undefined has not been found' })
+    }
+    if (!mongoose.Types.ObjectId.isValid(coachId) || !(await Coach.findById(coachId))) {
+      return res.status(404).json({ success: false, message: `The coach with the ID ${coachId} has not been found` })
     }
 
-    // Créer le nouveau match
-    const match = new MatchSession({
-      eventDate,
-      eventSlot,
-      eventType,
-      facilityId,
-      coachId,
-      teamId
-    })
+    if (!team1Id) {
+      return res.status(404).json({ success: false, message: 'The first team with the ID undefined has not been found' })
+    }
+    if (!mongoose.Types.ObjectId.isValid(team1Id) || !(await Team.findById(team1Id))) {
+      return res.status(404).json({ success: false, message: `The first team with the ID ${team1Id} has not been found` })
+    }
 
-    // Sauvegarder dans MongoDB
+    if (!team2Id) {
+      return res.status(404).json({ success: false, message: 'The second team with the ID undefined has not been found' })
+    }
+    if (!mongoose.Types.ObjectId.isValid(team2Id) || !(await Team.findById(team2Id))) {
+      return res.status(404).json({ success: false, message: `The second team with the ID ${team2Id} has not been found` })
+    }
+
+    const match = new MatchSession({ eventDate, eventSlot, eventType, facilityId, coachId, team1Id, team2Id })
+
+    // Save it in mangoDB
     await match.save()
 
     // Remplir les références
-    await match.populate('facilityId coachId teamId')
+    await match.populate('facilityId coachId team1Id team2Id')
 
-    res.status(201).json({
-      success: true,
-      message: 'Match created successfully',
-      data: match
-    })
+    res.status(201).json({ success: true, message: 'Match created successfully', data: match })
   } catch (error) {
     next(error)
   }
@@ -124,33 +96,44 @@ router.post('/', async (req, res, next) => {
 // PUT /matchSessions/:id - Mettre à jour un match
 router.put('/:id', async (req, res, next) => {
   try {
-    const { eventDate, eventSlot, eventType } = req.body
+    const { eventDate, eventSlot, eventType, facilityId, coachId, team1Id, team2Id } = req.body
+
+    if (facilityId) {
+      if (!mongoose.Types.ObjectId.isValid(facilityId) || !await Facility.findById(facilityId) || !facilityId) {
+        return res.status(404).json({ success: false, message: `The facility with the ID ${facilityId} has not been found` })
+      }
+    }
+
+    if (coachId) {
+      if (!mongoose.Types.ObjectId.isValid(coachId) || !await Coach.findById(coachId) || !coachId) {
+        return res.status(404).json({ success: false, message: `The coach with the ID ${coachId} has not been found` })
+      }
+    }
+
+    if (team1Id) {
+      if (!mongoose.Types.ObjectId.isValid(team1Id) || !await Team.findById(team1Id) || !team1Id) {
+        return res.status(404).json({ success: false, message: `The first team with the ID ${team1Id} has not been found` })
+      }
+    }
+
+    if (team2Id) {
+      if (!mongoose.Types.ObjectId.isValid(team2Id) || !await Team.findById(team2Id) || !team2Id) {
+        return res.status(404).json({ success: false, message: `The second team with the ID ${team2Id} has not been found` })
+      }
+    }
 
     const match = await MatchSession.findByIdAndUpdate(
       req.params.id,
-      {
-        eventDate,
-        eventSlot,
-        eventType
-      },
+      { eventDate, eventSlot, eventType, facilityId, coachId, team1Id, team2Id },
       { new: true, runValidators: true }
     )
-      .populate('facilityId')
-      .populate('coachId')
-      .populate('teamId')
 
     if (!match) {
-      return res.status(404).json({
-        success: false,
-        message: 'Match not found'
-      })
+      return res.status(404).json({ success: false, message: 'Match not found' })
     }
 
-    res.json({
-      success: true,
-      message: 'Match updated successfully',
-      data: match
-    })
+    await match.populate('facilityId coachId team1Id team2Id')
+    res.json({ success: true, message: 'Match updated successfully', data: match })
   } catch (error) {
     next(error)
   }
@@ -162,17 +145,10 @@ router.delete('/:id', async (req, res, next) => {
     const match = await MatchSession.findByIdAndDelete(req.params.id)
 
     if (!match) {
-      return res.status(404).json({
-        success: false,
-        message: 'Match not found'
-      })
+      return res.status(404).json({ success: false, message: 'Match not found' })
     }
 
-    res.json({
-      success: true,
-      message: 'Match deleted successfully',
-      data: match
-    })
+    res.json({ success: true, message: 'Match deleted successfully', data: match })
   } catch (error) {
     next(error)
   }

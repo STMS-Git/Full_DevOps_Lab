@@ -42,6 +42,12 @@ const coachSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+
+    phoneNumber: {
+      type: String,
+      required: true,
+      match: /^06\d{8}$/
     }
   },
   {

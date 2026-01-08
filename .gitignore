@@ -51,3 +51,5 @@ Thumbs.db
 
 # Optional: ignore GitHub workflows cache
 .github/workflows/*.cache
+
+.env
