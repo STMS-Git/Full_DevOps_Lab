@@ -29,3 +29,45 @@ describe('errorHandler', () => {
     expect(res.body).toEqual({ error: true, message: 'teapot' })
   })
 })
+
+describe('errorHandler - Mongoose errors', () => {
+  it('handles ValidationError', () => {
+    const res = makeRes()
+    const err = {
+      name: 'ValidationError',
+      errors: {
+        name: { message: 'Name is required' },
+        email: { message: 'Invalid email format' }
+      }
+    }
+    errorHandler(err, {}, res, () => {})
+    expect(res.statusCode).toBe(400)
+    expect(res.body.error).toBe(true)
+    expect(res.body.message).toBe('Validation error')
+    expect(res.body.details).toEqual(['Name is required', 'Invalid email format'])
+  })
+
+  it('handles duplicate key error (11000)', () => {
+    const res = makeRes()
+    const err = {
+      code: 11000,
+      keyPattern: { email: 1 }
+    }
+    errorHandler(err, {}, res, () => {})
+    expect(res.statusCode).toBe(409)
+    expect(res.body.error).toBe(true)
+    expect(res.body.message).toBe('Duplicate entry')
+    expect(res.body.field).toBe('email')
+  })
+
+  it('handles CastError (invalid ObjectId)', () => {
+    const res = makeRes()
+    const err = {
+      name: 'CastError'
+    }
+    errorHandler(err, {}, res, () => {})
+    expect(res.statusCode).toBe(400)
+    expect(res.body.error).toBe(true)
+    expect(res.body.message).toBe('Invalid ID format')
+  })
+})
