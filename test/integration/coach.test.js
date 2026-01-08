@@ -1,7 +1,7 @@
 import request from 'supertest'
-import app from '../src/app.js'
+import app from '../../src/app.js'
 import { describe, it, expect, beforeEach } from 'vitest'
-import Coach from '../src/models/Coach.js'
+import Coach from '../../src/models/Coach.js'
 
 describe('Coach CRUD Operations', () => {
   let coachId

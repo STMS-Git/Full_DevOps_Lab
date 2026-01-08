@@ -1,10 +1,10 @@
 import request from 'supertest'
-import app from '../src/app.js'
+import app from '../../src/app.js'
 import { describe, it, expect, beforeEach } from 'vitest'
-import TrainingSession from '../src/models/TrainingSession.js'
-import Facility from '../src/models/Facility.js'
-import Coach from '../src/models/Coach.js'
-import Team from '../src/models/Team.js'
+import TrainingSession from '../../src/models/TrainingSession.js'
+import Facility from '../../src/models/Facility.js'
+import Coach from '../../src/models/Coach.js'
+import Team from '../../src/models/Team.js'
 
 describe('TrainingSession CRUD Operations', () => {
   let trainingSessionId, facilityId, coachId, teamId

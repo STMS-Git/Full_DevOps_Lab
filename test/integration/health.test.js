@@ -2,7 +2,7 @@
  * Integration test for GET /health.
  */
 import request from 'supertest'
-import app from '../src/app.js'
+import app from '../../src/app.js'
 import { describe, it, expect } from 'vitest'
 
 describe('GET /health', () => {
