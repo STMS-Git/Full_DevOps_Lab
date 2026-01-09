@@ -1,39 +1,47 @@
+/**
+ * Integration tests for Team CRUD operations
+ * Tests HTTP endpoints with real MongoDB operations
+ */
 import request from 'supertest'
 import app from '../../src/app.js'
 import { describe, it, expect, beforeEach } from 'vitest'
 import Team from '../../src/models/Team.js'
+import { clearCollection, createTeam } from '../helpers/testHelpers.js'
+import { teamFactory } from '../helpers/factories.js'
 
 describe('Team CRUD Operations', () => {
   let teamId
 
   beforeEach(async () => {
-    await Team.deleteMany({})
+    await clearCollection(Team)
   })
 
   // ========== CREATE ==========
   describe('POST /teams', () => {
     it('should return 400 if name is missing', async () => {
+      const invalidData = { sport: 'Football' }
+
       const response = await request(app)
         .post('/teams')
-        .send({ sport: 'Football', city: 'Paris' })
+        .send(invalidData)
         .expect(400)
 
       expect(response.body.success).toBe(false)
     })
 
     it('should create team with valid data', async () => {
+      const teamData = teamFactory({
+        name: 'FC Test',
+        sport: 'Football'
+      })
+
       const response = await request(app)
         .post('/teams')
-        .send({
-          name: 'Paris United',
-          sport: 'Football',
-          city: 'Paris'
-        })
+        .send(teamData)
         .expect(201)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.data.name).toBe('Paris United')
-      expect(response.body.data.sport).toBe('Football')
+      expect(response.body.data.name).toBe('FC Test')
       teamId = response.body.data._id
     })
   })
@@ -41,10 +49,8 @@ describe('Team CRUD Operations', () => {
   // ========== READ (LIST) ==========
   describe('GET /teams', () => {
     beforeEach(async () => {
-      await Team.create([
-        { name: 'Lyon Masters', sport: 'Basketball', city: 'Lyon' },
-        { name: 'Marseille FC', sport: 'Football', city: 'Marseille' }
-      ])
+      await createTeam(teamFactory({ name: 'Team A', sport: 'Football' }))
+      await createTeam(teamFactory({ name: 'Team B', sport: 'Basketball' }))
     })
 
     it('should return all teams', async () => {
@@ -61,11 +67,10 @@ describe('Team CRUD Operations', () => {
   // ========== READ (BY ID) ==========
   describe('GET /teams/:id', () => {
     beforeEach(async () => {
-      const team = await Team.create({
-        name: 'Toulouse Team',
-        sport: 'Rugby',
-        city: 'Toulouse'
-      })
+      const team = await createTeam(teamFactory({
+        name: 'Test Team',
+        sport: 'Rugby'
+      }))
       teamId = team._id.toString()
     })
 
@@ -84,18 +89,17 @@ describe('Team CRUD Operations', () => {
 
       expect(response.body.success).toBe(true)
       expect(response.body.data._id).toBe(teamId)
-      expect(response.body.data.name).toBe('Toulouse Team')
+      expect(response.body.data.name).toBe('Test Team')
     })
   })
 
   // ========== UPDATE ==========
   describe('PUT /teams/:id', () => {
     beforeEach(async () => {
-      const team = await Team.create({
-        name: 'Old Team',
-        sport: 'Volleyball',
-        city: 'Nice'
-      })
+      const team = await createTeam(teamFactory({
+        name: 'Old Name',
+        sport: 'Football'
+      }))
       teamId = team._id.toString()
     })
 
@@ -112,25 +116,23 @@ describe('Team CRUD Operations', () => {
       const response = await request(app)
         .put(`/teams/${teamId}`)
         .send({
-          name: 'New Team',
-          city: 'Bordeaux'
+          name: 'New Name',
+          sport: 'Basketball'
         })
         .expect(200)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.data.name).toBe('New Team')
-      expect(response.body.data.city).toBe('Bordeaux')
+      expect(response.body.data.name).toBe('New Name')
+      expect(response.body.data.sport).toBe('Basketball')
     })
   })
 
   // ========== DELETE ==========
   describe('DELETE /teams/:id', () => {
     beforeEach(async () => {
-      const team = await Team.create({
-        name: 'Delete Team',
-        sport: 'Rugby',
-        city: 'Nantes'
-      })
+      const team = await createTeam(teamFactory({
+        name: 'Team to Delete'
+      }))
       teamId = team._id.toString()
     })
 

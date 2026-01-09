@@ -33,11 +33,12 @@ export async function clearCollection (Model) {
  * @returns {Promise<Object>} Created team
  */
 export async function createTeam (data = {}) {
+  const timestamp = Date.now()
+  const random = Math.floor(Math.random() * 1000)
+
   const team = new Team({
-    name: data.name || 'Test Team',
+    name: data.name || `Test Team ${timestamp}-${random}`,
     sport: data.sport || 'Football',
-    ageCategory: data.ageCategory || 'U15',
-    level: data.level || 'Régional',
     ...data
   })
   return await team.save()
@@ -49,10 +50,13 @@ export async function createTeam (data = {}) {
  * @returns {Promise<Object>} Created coach
  */
 export async function createCoach (data = {}) {
+  const timestamp = Date.now()
+  const random = Math.floor(Math.random() * 1000)
+
   const coach = new Coach({
     firstName: data.firstName || 'John',
     lastName: data.lastName || 'Doe',
-    email: data.email || 'john.doe@test.com',
+    email: data.email || `john.doe.${timestamp}-${random}@test.com`,
     phone: data.phone || '0123456789',
     ...data
   })
@@ -65,10 +69,12 @@ export async function createCoach (data = {}) {
  * @returns {Promise<Object>} Created facility
  */
 export async function createFacility (data = {}) {
+  const timestamp = Date.now()
+  const random = Math.floor(Math.random() * 1000)
+
   const facility = new Facility({
-    name: data.name || 'Test Facility',
+    name: data.name || `Test Facility ${timestamp}-${random}`,
     address: data.address || '123 Test St',
-    capacity: data.capacity || 100,
     ...data
   })
   return await facility.save()
@@ -81,17 +87,22 @@ export async function createFacility (data = {}) {
  */
 export async function createMatchSession (data = {}) {
   // Ensure required references exist
-  if (!data.team) {
+  if (!data.teamId) {
     const team = await createTeam()
-    data.team = team._id
+    data.teamId = team._id
   }
-  if (!data.facility) {
+  if (!data.coachId) {
+    const coach = await createCoach()
+    data.coachId = coach._id
+  }
+  if (!data.facilityId) {
     const facility = await createFacility()
-    data.facility = facility._id
+    data.facilityId = facility._id
   }
 
   const matchSession = new MatchSession({
-    date: data.date || new Date(),
+    eventDate: data.eventDate || new Date(),
+    eventSlot: data.eventSlot || 'morning',
     opponent: data.opponent || 'Test Opponent',
     type: data.type || 'home',
     ...data
@@ -106,49 +117,24 @@ export async function createMatchSession (data = {}) {
  */
 export async function createTrainingSession (data = {}) {
   // Ensure required references exist
-  if (!data.team) {
+  if (!data.teamId) {
     const team = await createTeam()
-    data.team = team._id
+    data.teamId = team._id
   }
-  if (!data.facility) {
+  if (!data.coachId) {
+    const coach = await createCoach()
+    data.coachId = coach._id
+  }
+  if (!data.facilityId) {
     const facility = await createFacility()
-    data.facility = facility._id
+    data.facilityId = facility._id
   }
 
   const trainingSession = new TrainingSession({
-    date: data.date || new Date(),
+    eventDate: data.eventDate || new Date(),
+    eventSlot: data.eventSlot || 'morning',
     duration: data.duration || 90,
-    objectives: data.objectives || ['Test objective'],
     ...data
   })
   return await trainingSession.save()
-}
-
-/**
- * Assert that a response has a standard error shape
- * @param {Object} body - Response body
- * @param {number} expectedStatus - Expected HTTP status
- */
-export function assertErrorResponse (body, expectedStatus) {
-  return {
-    error: true,
-    status: expectedStatus,
-    ...body
-  }
-}
-
-/**
- * Generate a valid MongoDB ObjectId string
- * @returns {string} Valid ObjectId
- */
-export function generateObjectId () {
-  return new mongoose.Types.ObjectId().toString()
-}
-
-/**
- * Generate an invalid MongoDB ObjectId string
- * @returns {string} Invalid ObjectId
- */
-export function generateInvalidObjectId () {
-  return 'invalid-id-123'
 }

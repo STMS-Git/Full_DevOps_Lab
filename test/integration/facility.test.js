@@ -1,40 +1,47 @@
+/**
+ * Integration tests for Facility CRUD operations
+ * Tests HTTP endpoints with real MongoDB operations
+ */
 import request from 'supertest'
 import app from '../../src/app.js'
 import { describe, it, expect, beforeEach } from 'vitest'
 import Facility from '../../src/models/Facility.js'
+import { clearCollection, createFacility } from '../helpers/testHelpers.js'
+import { facilityFactory } from '../helpers/factories.js'
 
 describe('Facility CRUD Operations', () => {
   let facilityId
 
   beforeEach(async () => {
-    await Facility.deleteMany({})
+    await clearCollection(Facility)
   })
 
   // ========== CREATE ==========
   describe('POST /facilities', () => {
     it('should return 400 if name is missing', async () => {
+      const invalidData = { address: '123 Street' }
+
       const response = await request(app)
         .post('/facilities')
-        .send({ location: 'Paris', capacity: 500 })
+        .send(invalidData)
         .expect(400)
 
       expect(response.body.success).toBe(false)
     })
 
     it('should create facility with valid data', async () => {
+      const facilityData = facilityFactory({
+        name: 'Stadium Test',
+        address: '456 Main St'
+      })
+
       const response = await request(app)
         .post('/facilities')
-        .send({
-          name: 'Stadium Central',
-          location: 'Paris',
-          capacity: 800,
-          type: 'outdoor'
-        })
+        .send(facilityData)
         .expect(201)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.data.name).toBe('Stadium Central')
-      expect(response.body.data.capacity).toBe(800)
+      expect(response.body.data.name).toBe('Stadium Test')
       facilityId = response.body.data._id
     })
   })
@@ -42,10 +49,8 @@ describe('Facility CRUD Operations', () => {
   // ========== READ (LIST) ==========
   describe('GET /facilities', () => {
     beforeEach(async () => {
-      await Facility.create([
-        { name: 'Stadium A', location: 'Paris', capacity: 500, type: 'outdoor' },
-        { name: 'Stadium B', location: 'Lyon', capacity: 600, type: 'outdoor' }
-      ])
+      await createFacility(facilityFactory({ name: 'Facility A' }))
+      await createFacility(facilityFactory({ name: 'Facility B' }))
     })
 
     it('should return all facilities', async () => {
@@ -62,12 +67,10 @@ describe('Facility CRUD Operations', () => {
   // ========== READ (BY ID) ==========
   describe('GET /facilities/:id', () => {
     beforeEach(async () => {
-      const facility = await Facility.create({
-        name: 'Stadium Test',
-        location: 'Marseille',
-        capacity: 700,
-        type: 'outdoor'
-      })
+      const facility = await createFacility(facilityFactory({
+        name: 'Test Facility',
+        address: '789 Test Ave'
+      }))
       facilityId = facility._id.toString()
     })
 
@@ -86,19 +89,16 @@ describe('Facility CRUD Operations', () => {
 
       expect(response.body.success).toBe(true)
       expect(response.body.data._id).toBe(facilityId)
-      expect(response.body.data.name).toBe('Stadium Test')
+      expect(response.body.data.name).toBe('Test Facility')
     })
   })
 
   // ========== UPDATE ==========
   describe('PUT /facilities/:id', () => {
     beforeEach(async () => {
-      const facility = await Facility.create({
-        name: 'Stadium Old',
-        location: 'Toulouse',
-        capacity: 400,
-        type: 'outdoor'
-      })
+      const facility = await createFacility(facilityFactory({
+        name: 'Old Facility'
+      }))
       facilityId = facility._id.toString()
     })
 
@@ -115,26 +115,22 @@ describe('Facility CRUD Operations', () => {
       const response = await request(app)
         .put(`/facilities/${facilityId}`)
         .send({
-          name: 'Stadium New',
-          capacity: 900
+          name: 'Updated Facility',
+          address: 'New Address 123'
         })
         .expect(200)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.data.name).toBe('Stadium New')
-      expect(response.body.data.capacity).toBe(900)
+      expect(response.body.data.name).toBe('Updated Facility')
     })
   })
 
   // ========== DELETE ==========
   describe('DELETE /facilities/:id', () => {
     beforeEach(async () => {
-      const facility = await Facility.create({
-        name: 'Stadium Delete',
-        location: 'Nice',
-        capacity: 500,
-        type: 'outdoor'
-      })
+      const facility = await createFacility(facilityFactory({
+        name: 'Facility to Delete'
+      }))
       facilityId = facility._id.toString()
     })
 
@@ -153,7 +149,6 @@ describe('Facility CRUD Operations', () => {
 
       expect(response.body.success).toBe(true)
 
-      // Vérifier que c'est bien supprimé
       const checkResponse = await request(app)
         .get(`/facilities/${facilityId}`)
         .expect(404)

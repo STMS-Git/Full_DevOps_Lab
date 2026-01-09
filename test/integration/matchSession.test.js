@@ -54,6 +54,22 @@ describe('MatchSession CRUD Operations', () => {
       expect(response.body.success).toBe(false)
     })
 
+    it('should return 400 if eventType is invalid', async () => {
+      const response = await request(app)
+        .post('/matchSessions')
+        .send({
+          eventType: 'invalid',
+          eventDate: '2026-06-15T14:00:00Z',
+          eventSlot: 'afternoon',
+          facilityId,
+          coachId,
+          teamId
+        })
+        .expect(400)
+
+      expect(response.body.success).toBe(false)
+    })
+
     it('should create match session with valid data', async () => {
       const response = await request(app)
         .post('/matchSessions')
@@ -68,8 +84,26 @@ describe('MatchSession CRUD Operations', () => {
 
       expect(response.body.success).toBe(true)
       expect(response.body.data.eventSlot).toBe('afternoon')
+      expect(response.body.data.eventType).toBe('match') // Vérifier la valeur par défaut
       expect(response.body.data.facilityId._id).toBe(facilityId)
       matchSessionId = response.body.data._id
+    })
+
+    it('should create match session with eventType training', async () => {
+      const response = await request(app)
+        .post('/matchSessions')
+        .send({
+          eventType: 'training',
+          eventDate: '2026-06-16T10:00:00Z',
+          eventSlot: 'morning',
+          facilityId,
+          coachId,
+          teamId
+        })
+        .expect(201)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data.eventType).toBe('training')
     })
   })
 
