@@ -1,24 +1,25 @@
-import { MongoMemoryServer } from 'mongodb-memory-server'
-import mongoose from 'mongoose'
+// test/setup.js
 import { beforeAll, afterAll } from 'vitest'
+import mongoose from 'mongoose'
+import { MongoMemoryServer } from 'mongodb-memory-server'
 
 let mongoServer
 
-// Setup avant tous les tests
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create()
-  const mongoUri = mongoServer.getUri()
-  await mongoose.connect(mongoUri)
   console.log('✅ MongoDB Memory Server started')
-})
+  mongoServer = await MongoMemoryServer.create()
+  const uri = mongoServer.getUri()
 
-// Cleanup après tous les tests
-afterAll(async () => {
-  if (mongoose.connection.readyState === 1) {
+  // Fermer toute connexion existante avant de se reconnecter
+  if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect()
   }
-  if (mongoServer) {
-    await mongoServer.stop()
-  }
+
+  await mongoose.connect(uri)
+})
+
+afterAll(async () => {
   console.log('✅ MongoDB Memory Server stopped')
+  await mongoose.disconnect()
+  await mongoServer.stop()
 })
