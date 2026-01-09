@@ -1,170 +1,67 @@
-import MatchSession from '../models/MatchSession.js'
-import Facility from '../models/Facility.js'
-import Coach from '../models/Coach.js'
-import Team from '../models/Team.js'
+import MatchSession from '../models/matchSession.model.js'
 
-export async function listMatches (req, res, next) {
+/**
+ * List all match sessions with populated fields
+ */
+export async function listMatchSessions (req, res, next) {
   try {
-    const matches = await MatchSession.find()
-      .populate('facilityId')
-      .populate('coachId')
+    const sessions = await MatchSession.find()
       .populate('teamId')
-      .sort({ eventDate: 1 })
-
-    res.json({
-      success: true,
-      count: matches.length,
-      data: matches
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-export async function getMatchById (req, res, next) {
-  try {
-    const match = await MatchSession.findById(req.params.id)
       .populate('facilityId')
-      .populate('coachId')
-      .populate('teamId')
-
-    if (!match) {
-      return res.status(404).json({
-        success: false,
-        message: 'Match not found'
-      })
-    }
+      .sort({ date: -1 })
 
     res.json({
       success: true,
-      data: match
+      data: sessions
     })
   } catch (error) {
     next(error)
   }
 }
 
-export async function createMatch (req, res, next) {
+/**
+ * Get match session by ID
+ */
+export async function getMatchSessionById (req, res, next) {
   try {
-    const {
-      eventDate,
-      eventSlot,
-      eventType = 'match',
-      facilityId,
-      coachId,
-      teamId
-    } = req.body
-
-    // Validation basique
-    if (!eventDate || !eventSlot || !facilityId || !coachId || !teamId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields'
-      })
-    }
-
-    // Vérifier que la facility existe
-    const facility = await Facility.findById(facilityId)
-    if (!facility) {
-      return res.status(404).json({
-        success: false,
-        message: `Facility with ID ${facilityId} not found`
-      })
-    }
-
-    // Vérifier que le coach existe
-    const coach = await Coach.findById(coachId)
-    if (!coach) {
-      return res.status(404).json({
-        success: false,
-        message: `Coach with ID ${coachId} not found`
-      })
-    }
-
-    // Vérifier que la team existe
-    const team = await Team.findById(teamId)
-    if (!team) {
-      return res.status(404).json({
-        success: false,
-        message: `Team with ID ${teamId} not found`
-      })
-    }
-
-    // Créer le nouveau match
-    const match = new MatchSession({
-      eventDate,
-      eventSlot,
-      eventType,
-      facilityId,
-      coachId,
-      teamId
-    })
-
-    // Sauvegarder dans MongoDB
-    await match.save()
-
-    // Remplir les références
-    await match.populate('facilityId coachId teamId')
-
-    res.status(201).json({
-      success: true,
-      message: 'Match created successfully',
-      data: match
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-export async function updateMatch (req, res, next) {
-  try {
-    const { eventDate, eventSlot, eventType } = req.body
-
-    const match = await MatchSession.findByIdAndUpdate(
-      req.params.id,
-      {
-        eventDate,
-        eventSlot,
-        eventType
-      },
-      { new: true, runValidators: true }
-    )
+    const session = await MatchSession.findById(req.params.id)
+      .populate('teamId')
       .populate('facilityId')
-      .populate('coachId')
-      .populate('teamId')
 
-    if (!match) {
+    if (!session) {
       return res.status(404).json({
         success: false,
-        message: 'Match not found'
+        message: 'Match session not found'
       })
     }
 
     res.json({
       success: true,
-      message: 'Match updated successfully',
-      data: match
+      data: session
     })
   } catch (error) {
     next(error)
   }
 }
 
-export async function deleteMatch (req, res, next) {
+/**
+ * Delete match session by ID
+ */
+export async function deleteMatchSession (req, res, next) {
   try {
-    const match = await MatchSession.findByIdAndDelete(req.params.id)
+    const session = await MatchSession.findByIdAndDelete(req.params.id)
 
-    if (!match) {
+    if (!session) {
       return res.status(404).json({
         success: false,
-        message: 'Match not found'
+        message: 'Match session not found'
       })
     }
 
     res.json({
       success: true,
-      message: 'Match deleted successfully',
-      data: match
+      message: 'Match session deleted successfully',
+      data: session
     })
   } catch (error) {
     next(error)

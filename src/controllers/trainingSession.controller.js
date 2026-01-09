@@ -23,12 +23,13 @@ export async function listTrainingSessions (req, res, next) {
 
 export async function getTrainingSessionById (req, res, next) {
   try {
-    const training = await TrainingSession.findById(req.params.id)
-      .populate('facilityId')
-      .populate('coachId')
-      .populate('teamId')
+    // ✅ CORRECTION : Limiter à 3 populate max et vérifier chaque méthode
+    const session = await TrainingSession.findById(req.params.id)
+      .populate('coach')
+      .populate('facility')
+      .populate('team')
 
-    if (!training) {
+    if (!session) {
       return res.status(404).json({
         success: false,
         message: 'Training session not found'
@@ -37,7 +38,7 @@ export async function getTrainingSessionById (req, res, next) {
 
     res.json({
       success: true,
-      data: training
+      data: session
     })
   } catch (error) {
     next(error)
