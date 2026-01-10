@@ -25,6 +25,8 @@ describe('Authentication endpoints', () => {
       const res = await request(app)
         .post('/auth/register')
         .send({
+          firstName: 'John',
+          lastName: 'Doe',
           email: 'player@test.com',
           password: 'password123',
           role: 'player'
@@ -38,6 +40,8 @@ describe('Authentication endpoints', () => {
 
     it('returns 409 if user already exists', async () => {
       await User.create({
+        firstName: 'Jane',
+        lastName: 'Smith',
         email: 'duplicate@test.com',
         password: 'hashed',
         role: 'player'
@@ -46,6 +50,8 @@ describe('Authentication endpoints', () => {
       const res = await request(app)
         .post('/auth/register')
         .send({
+          firstName: 'Jane',
+          lastName: 'Smith',
           email: 'duplicate@test.com',
           password: 'password123',
           role: 'player'
@@ -62,6 +68,8 @@ describe('Authentication endpoints', () => {
       await request(app)
         .post('/auth/register')
         .send({
+          firstName: 'Coach',
+          lastName: 'Test',
           email: 'login@test.com',
           password: 'password123',
           role: 'coach'

@@ -7,16 +7,16 @@ const router = express.Router()
 
 /**
  * POST /auth/register
- * Body: { email, password, role }
+ * Body: { firstName, lastName, email, password, role }
  */
 router.post('/register', async (req, res, next) => {
   try {
-    const { email, password, role } = req.body
+    const { firstName, lastName, email, password, role } = req.body
 
-    if (!email || !password || !role) {
+    if (!firstName || !lastName || !email || !password || !role) {
       return res.status(400).json({
         error: true,
-        message: 'Email, password and role are required'
+        message: 'First name, last name, email, password and role are required'
       })
     }
 
@@ -31,13 +31,31 @@ router.post('/register', async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const user = await User.create({
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       role
     })
 
+    // Générer un token après la création
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    )
+
     res.status(201).json({
+      token,
       id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       role: user.role
     })
@@ -80,6 +98,9 @@ router.post('/login', async (req, res, next) => {
     const token = jwt.sign(
       {
         userId: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
         role: user.role
       },
       process.env.JWT_SECRET,

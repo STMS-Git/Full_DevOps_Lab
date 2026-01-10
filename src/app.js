@@ -1,18 +1,11 @@
-/**
- * Express app configuration.
- * Responsibilities:
- *  - Base routes (/, /health)
- *  - Mount routes from src/routes/auto/
- *  - Global error handler (consistent JSON for errors)
- *  - MongoDB routes for Facility, Coach, Team, MatchSession, TrainingSession
- */
 import express from 'express'
+import cors from 'cors'
 import { errorHandler } from './utils/errorHandler.js'
 
 // Import of the routes
 import versionRoute from './routes/auto/version.route.js'
-import infoRoute from './routes/auto/info.route.js' // À décommenter plus tard
-import boomRoute from './routes/auto/boom.route.js' // À décommenter plus tard
+import infoRoute from './routes/auto/info.route.js'
+import boomRoute from './routes/auto/boom.route.js'
 
 // MongoDB routes (NEW)
 import facilityRoute from './routes/auto/facility.route.js'
@@ -23,6 +16,9 @@ import trainingSessionRoute from './routes/auto/trainingSession.route.js'
 import authRoute from './routes/auto/auth.route.js'
 
 const app = express()
+
+// CORS - Autoriser les requêtes cross-origin
+app.use(cors())
 
 // JSON Middlewares
 app.use(express.json())
@@ -51,8 +47,8 @@ app.get('/health', (req, res) => {
 
 // Routes existantes
 app.use('/version', versionRoute)
-app.use('/info', infoRoute) // À décommenter plus tard
-app.use('/boom', boomRoute) // À décommenter plus tard
+app.use('/info', infoRoute)
+app.use('/boom', boomRoute)
 
 // MongoDB Routes (NEW)
 app.use('/facilities', facilityRoute)
