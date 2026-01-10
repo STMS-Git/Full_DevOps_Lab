@@ -19,7 +19,7 @@ body {
   flex-direction: column;
 }
 
-/* Reset des liens */
+/* Reset the links */
 a {
   text-decoration: none;
   color: inherit;
@@ -29,7 +29,7 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Amélioration des boutons */
+/* Improvement of the buttons */
 button {
   font-family: inherit;
   transition: all 0.2s ease;
@@ -44,7 +44,7 @@ button:active {
   transform: translateY(0);
 }
 
-/* Amélioration des inputs */
+/* Improvement of the inputs */
 input {
   font-family: inherit;
   font-size: 1rem;
