@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
 
     const data = await res.json()
 
-    if (res.ok) {
+    if (res.ok && data.token) {
       localStorage.setItem('token', data.token)
       const payload = JSON.parse(atob(data.token.split('.')[1]))
       const userData = { 
@@ -59,15 +59,9 @@ export function AuthProvider({ children }) {
     const data = await res.json()
 
     if (res.ok) {
-      localStorage.setItem('token', data.token)
-      const payload = JSON.parse(atob(data.token.split('.')[1]))
-      const userData = { 
-        id: payload.userId, 
-        email: payload.email,
-        role: payload.role 
-      }
-      setUser(userData)
-      return { success: true, user: userData }
+      // ✅ Register ne renvoie pas de token, donc on fait un login automatique
+      const loginResult = await login(email, password)
+      return loginResult
     } else {
       return { success: false, message: data.message || 'Registration failed' }
     }
