@@ -45,7 +45,7 @@ export async function createCoach (req, res, next) {
       isActive = true
     } = req.body
 
-    // Validation basique
+    // Basic validation (we check that the first name, the last name and the email exist)
     if (!firstName || !lastName || !email) {
       return res.status(400).json({
         success: false,
@@ -53,7 +53,7 @@ export async function createCoach (req, res, next) {
       })
     }
 
-    // Créer le nouveau coach
+    // We create the new coach
     const coach = new Coach({
       firstName,
       lastName,
@@ -63,7 +63,7 @@ export async function createCoach (req, res, next) {
       isActive
     })
 
-    // Sauvegarder dans MongoDB
+    // We save the new coach in MongoDB
     await coach.save()
 
     res.status(201).json({
