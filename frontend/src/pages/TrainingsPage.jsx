@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import TrainingList from '../components/TrainingList'
 import TrainingForm from '../components/TrainingForm'
+import { useAuth } from '../context/AuthContext'
 
 export default function TrainingsPage() {
+  const { user } = useAuth()
   const [trainings, setTrainings] = useState([])
   const [teams, setTeams] = useState([])
   const [coaches, setCoaches] = useState([])
   const [facilities, setFacilities] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const isCoach = user?.role === 'coach'
 
   async function loadTrainings() {
     try {
@@ -46,6 +50,10 @@ export default function TrainingsPage() {
   }, [])
 
   async function handleDelete(id) {
+    if (!isCoach) {
+      alert('Only coaches can delete entries')
+      return
+    }
     const res = await fetch(`/api/trainingSessions/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setTrainings(prev => prev.filter(t => t._id !== id))
@@ -57,13 +65,29 @@ export default function TrainingsPage() {
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h2>🏋️ Training Sessions</h2>
-      <TrainingForm 
-        onCreated={loadTrainings} 
-        teams={teams}
-        coaches={coaches}
-        facilities={facilities}
-      />
-      <TrainingList trainings={trainings} onDelete={handleDelete} />
+      
+      {isCoach ? (
+        <TrainingForm 
+          onCreated={loadTrainings} 
+          teams={teams}
+          coaches={coaches}
+          facilities={facilities}
+        />
+      ) : (
+        <div style={{
+          padding: '1.5rem',
+          background: '#e8f5e9',
+          borderRadius: '8px',
+          border: '2px solid #4CAF50',
+          marginBottom: '2rem'
+        }}>
+          <p style={{ margin: 0, color: '#2e7d32', fontWeight: 'bold' }}>
+            ℹ️ You are viewing trainings in read-only mode. Only coaches can schedule or modify trainings.
+          </p>
+        </div>
+      )}
+
+      <TrainingList trainings={trainings} onDelete={handleDelete} canDelete={isCoach} />
     </div>
   )
 }

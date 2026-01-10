@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-export default function TrainingList({ trainings, onDelete }) {
+export default function TrainingList({ trainings, onDelete, canDelete = true }) {
   if (trainings.length === 0) {
     return <p>No trainings scheduled yet. Add one above!</p>
   }
@@ -63,20 +63,22 @@ export default function TrainingList({ trainings, onDelete }) {
                   </>
                 )}
               </div>
-              <button 
-                onClick={() => onDelete(training._id)}
-                style={{ 
-                  background: '#ff4444', 
-                  color: 'white', 
-                  border: 'none',
-                  padding: '0.5rem 1.5rem',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Delete
-              </button>
+              {canDelete && (
+                <button 
+                  onClick={() => onDelete(training._id)}
+                  style={{ 
+                    background: '#ff4444', 
+                    color: 'white', 
+                    border: 'none',
+                    padding: '0.5rem 1.5rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </li>
         ))}
@@ -103,4 +105,5 @@ TrainingList.propTypes = {
     })
   ).isRequired,
   onDelete: PropTypes.func.isRequired,
+  canDelete: PropTypes.bool,
 }

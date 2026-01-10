@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import MatchList from '../components/MatchList'
 import MatchForm from '../components/MatchForm'
+import { useAuth } from '../context/AuthContext'
 
 export default function MatchesPage() {
+  const { user } = useAuth()
   const [matches, setMatches] = useState([])
   const [teams, setTeams] = useState([])
   const [coaches, setCoaches] = useState([])
   const [facilities, setFacilities] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const isCoach = user?.role === 'coach'
 
   async function loadMatches() {
     try {
@@ -46,6 +50,10 @@ export default function MatchesPage() {
   }, [])
 
   async function handleDelete(id) {
+    if (!isCoach) {
+      alert('Only coaches can delete entries')
+      return
+    }
     const res = await fetch(`/api/matchSessions/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setMatches(prev => prev.filter(m => m._id !== id))
@@ -57,13 +65,29 @@ export default function MatchesPage() {
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h2>⚽ Match Sessions</h2>
-      <MatchForm 
-        onCreated={loadMatches} 
-        teams={teams}
-        coaches={coaches}
-        facilities={facilities}
-      />
-      <MatchList matches={matches} onDelete={handleDelete} />
+      
+      {isCoach ? (
+        <MatchForm 
+          onCreated={loadMatches} 
+          teams={teams}
+          coaches={coaches}
+          facilities={facilities}
+        />
+      ) : (
+        <div style={{
+          padding: '1.5rem',
+          background: '#fff9e6',
+          borderRadius: '8px',
+          border: '2px solid #ffc107',
+          marginBottom: '2rem'
+        }}>
+          <p style={{ margin: 0, color: '#f57c00', fontWeight: 'bold' }}>
+            ℹ️ You are viewing matches in read-only mode. Only coaches can schedule or modify matches.
+          </p>
+        </div>
+      )}
+
+      <MatchList matches={matches} onDelete={handleDelete} canDelete={isCoach} />
     </div>
   )
 }

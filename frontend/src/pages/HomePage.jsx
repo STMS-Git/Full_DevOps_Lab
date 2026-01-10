@@ -21,7 +21,6 @@ export default function HomePage() {
 
   async function loadDashboardData() {
     try {
-      // Charger toutes les données en parallèle
       const [coachesRes, teamsRes, facilitiesRes, matchesRes, trainingsRes] = await Promise.all([
         fetch('/api/coaches'),
         fetch('/api/teams'),
@@ -44,7 +43,6 @@ export default function HomePage() {
         trainings: (trainings.data || trainings).length
       })
 
-      // Filtrer les matches et trainings à venir (dans les 7 prochains jours)
       const now = new Date()
       const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
 
@@ -88,6 +86,10 @@ export default function HomePage() {
     )
   }
 
+  // Affichage selon le rôle
+  const isCoach = user?.role === 'coach'
+  const isPlayer = user?.role === 'player'
+
   return (
     <div style={{ 
       padding: '2rem', 
@@ -96,9 +98,13 @@ export default function HomePage() {
       background: '#f5f5f5',
       minHeight: 'calc(100vh - 150px)'
     }}>
-      {/* Header avec message de bienvenue */}
+      {/* Header avec message personnalisé */}
       <div style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: isCoach 
+          ? 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)'
+          : isPlayer 
+          ? 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)'
+          : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         padding: '2rem',
         borderRadius: '12px',
         color: 'white',
@@ -106,56 +112,124 @@ export default function HomePage() {
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
       }}>
         <h1 style={{ margin: 0, fontSize: '2.5rem' }}>
-          {user ? `Welcome back, ${user.firstName}! 👋` : 'Welcome to Sports Management System 🏆'}
+          {isCoach && `👔 Coach Dashboard - Welcome ${user.firstName}!`}
+          {isPlayer && `⚽ Player Dashboard - Welcome ${user.firstName}!`}
+          {!user && 'Welcome to Sports Management System 🏆'}
         </h1>
         <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.1rem', opacity: 0.9 }}>
-          {user ? `Manage your sports activities efficiently` : 'Please login to access all features'}
+          {isCoach && 'Manage teams, schedule trainings and matches'}
+          {isPlayer && 'View your upcoming matches and training sessions'}
+          {!user && 'Please login to access all features'}
         </p>
       </div>
 
-      {/* Statistiques Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-        gap: '1.5rem',
-        marginBottom: '2rem'
-      }}>
-        <StatCard 
-          icon="👥" 
-          title="Coaches" 
-          count={stats.coaches} 
-          color="#2196F3"
-          link="/coaches"
-        />
-        <StatCard 
-          icon="🏆" 
-          title="Teams" 
-          count={stats.teams} 
-          color="#4CAF50"
-          link="/teams"
-        />
-        <StatCard 
-          icon="🏟️" 
-          title="Facilities" 
-          count={stats.facilities} 
-          color="#9C27B0"
-          link="/facilities"
-        />
-        <StatCard 
-          icon="⚽" 
-          title="Matches" 
-          count={stats.matches} 
-          color="#FF9800"
-          link="/matches"
-        />
-        <StatCard 
-          icon="🏋️" 
-          title="Trainings" 
-          count={stats.trainings} 
-          color="#00BCD4"
-          link="/trainings"
-        />
-      </div>
+      {/* Statistiques - Différentes selon le rôle */}
+      {isCoach && (
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <StatCard 
+            icon="👥" 
+            title="Coaches" 
+            count={stats.coaches} 
+            color="#2196F3"
+            link="/coaches"
+          />
+          <StatCard 
+            icon="🏆" 
+            title="Teams" 
+            count={stats.teams} 
+            color="#4CAF50"
+            link="/teams"
+          />
+          <StatCard 
+            icon="🏟️" 
+            title="Facilities" 
+            count={stats.facilities} 
+            color="#9C27B0"
+            link="/facilities"
+          />
+          <StatCard 
+            icon="⚽" 
+            title="Matches" 
+            count={stats.matches} 
+            color="#FF9800"
+            link="/matches"
+          />
+          <StatCard 
+            icon="🏋️" 
+            title="Trainings" 
+            count={stats.trainings} 
+            color="#00BCD4"
+            link="/trainings"
+          />
+        </div>
+      )}
+
+      {isPlayer && (
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <StatCard 
+            icon="⚽" 
+            title="Upcoming Matches" 
+            count={upcomingMatches.length} 
+            color="#FF9800"
+            link="/matches"
+          />
+          <StatCard 
+            icon="🏋️" 
+            title="Upcoming Trainings" 
+            count={upcomingTrainings.length} 
+            color="#00BCD4"
+            link="/trainings"
+          />
+          <StatCard 
+            icon="🏆" 
+            title="Total Teams" 
+            count={stats.teams} 
+            color="#4CAF50"
+            link="/teams"
+          />
+        </div>
+      )}
+
+      {!user && (
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}>
+          <StatCard 
+            icon="👥" 
+            title="Coaches" 
+            count={stats.coaches} 
+            color="#2196F3"
+            link="/coaches"
+          />
+          <StatCard 
+            icon="🏆" 
+            title="Teams" 
+            count={stats.teams} 
+            color="#4CAF50"
+            link="/teams"
+          />
+          <StatCard 
+            icon="⚽" 
+            title="Matches" 
+            count={stats.matches} 
+            color="#FF9800"
+            link="/matches"
+          />
+        </div>
+      )}
 
       {/* Prochains événements */}
       <div style={{ 
@@ -176,7 +250,7 @@ export default function HomePage() {
             borderBottom: '3px solid #FF9800',
             paddingBottom: '0.5rem'
           }}>
-            ⚽ Upcoming Matches (Next 7 Days)
+            ⚽ {isPlayer ? 'Your Upcoming Matches' : 'Upcoming Matches'} (Next 7 Days)
           </h2>
           {upcomingMatches.length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -209,7 +283,7 @@ export default function HomePage() {
             </ul>
           ) : (
             <p style={{ color: '#999', fontStyle: 'italic' }}>
-              No matches scheduled in the next 7 days.
+              {isPlayer ? 'You have no matches scheduled in the next 7 days.' : 'No matches scheduled in the next 7 days.'}
             </p>
           )}
           <Link to="/matches" style={{ 
@@ -236,7 +310,7 @@ export default function HomePage() {
             borderBottom: '3px solid #00BCD4',
             paddingBottom: '0.5rem'
           }}>
-            🏋️ Upcoming Trainings (Next 7 Days)
+            🏋️ {isPlayer ? 'Your Upcoming Trainings' : 'Upcoming Trainings'} (Next 7 Days)
           </h2>
           {upcomingTrainings.length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -290,7 +364,7 @@ export default function HomePage() {
             </ul>
           ) : (
             <p style={{ color: '#999', fontStyle: 'italic' }}>
-              No trainings scheduled in the next 7 days.
+              {isPlayer ? 'You have no trainings scheduled in the next 7 days.' : 'No trainings scheduled in the next 7 days.'}
             </p>
           )}
           <Link to="/trainings" style={{ 
@@ -305,8 +379,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      {user && (
+      {/* Quick Actions - Uniquement pour les Coaches */}
+      {isCoach && (
         <div style={{ 
           background: 'white',
           padding: '1.5rem',
@@ -328,11 +402,97 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Message pour les Players */}
+      {isPlayer && (
+        <div style={{ 
+          background: 'white',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          marginTop: '2rem',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <h3 style={{ color: '#4CAF50', margin: '0 0 1rem 0' }}>⚽ Player View</h3>
+          <p style={{ color: '#666', marginBottom: '1rem' }}>
+            You can view all matches, trainings, teams, and facilities. 
+            Contact your coach to schedule new events or make changes.
+          </p>
+          <div style={{ 
+            display: 'flex', 
+            gap: '1rem', 
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <Link to="/matches" style={{ 
+              padding: '0.7rem 1.5rem',
+              background: '#FF9800',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold'
+            }}>
+              📅 View Schedule
+            </Link>
+            <Link to="/teams" style={{ 
+              padding: '0.7rem 1.5rem',
+              background: '#4CAF50',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold'
+            }}>
+              🏆 View Teams
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Invitation à se connecter */}
+      {!user && (
+        <div style={{ 
+          background: 'white',
+          padding: '2rem',
+          borderRadius: '12px',
+          marginTop: '2rem',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ color: '#667eea', margin: '0 0 1rem 0' }}>🔐 Join Our Platform</h2>
+          <p style={{ color: '#666', marginBottom: '1.5rem', fontSize: '1.1rem' }}>
+            Login or register to access all features and manage your sports activities!
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <Link to="/login" style={{ 
+              padding: '0.8rem 2rem',
+              background: '#1976d2',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              fontSize: '1.1rem'
+            }}>
+              🔐 Login
+            </Link>
+            <Link to="/register" style={{ 
+              padding: '0.8rem 2rem',
+              background: '#4CAF50',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              fontSize: '1.1rem'
+            }}>
+              📝 Register
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-// Composant StatCard
+// Composants
 function StatCard({ icon, title, count, color, link }) {
   return (
     <Link to={link} style={{ textDecoration: 'none' }}>
@@ -365,7 +525,6 @@ function StatCard({ icon, title, count, color, link }) {
   )
 }
 
-// Composant QuickActionButton
 function QuickActionButton({ icon, text, link, color }) {
   return (
     <Link to={link} style={{ textDecoration: 'none' }}>
@@ -400,7 +559,6 @@ function QuickActionButton({ icon, text, link, color }) {
   )
 }
 
-// PropTypes
 import PropTypes from 'prop-types'
 
 StatCard.propTypes = {

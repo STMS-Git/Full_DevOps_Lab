@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
 import CoachList from '../components/CoachList'
 import CoachForm from '../components/CoachForm'
+import { useAuth } from '../context/AuthContext'
 
 export default function CoachesPage() {
+  const { user } = useAuth()
   const [coaches, setCoaches] = useState([])
   const [loading, setLoading] = useState(true)
+
+  const isCoach = user?.role === 'coach'
 
   async function loadCoaches() {
     try {
@@ -23,6 +27,10 @@ export default function CoachesPage() {
   }, [])
 
   async function handleDelete(id) {
+    if (!isCoach) {
+      alert('Only coaches can delete entries')
+      return
+    }
     const res = await fetch(`/api/coaches/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setCoaches(prev => prev.filter(c => c._id !== id))
@@ -33,9 +41,26 @@ export default function CoachesPage() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <h2>Coaches Management</h2>
-      <CoachForm onCreated={loadCoaches} />
-      <CoachList coaches={coaches} onDelete={handleDelete} />
+      <h2>👥 Coaches</h2>
+      
+      {/* Afficher le formulaire uniquement pour les coaches */}
+      {isCoach ? (
+        <CoachForm onCreated={loadCoaches} />
+      ) : (
+        <div style={{
+          padding: '1.5rem',
+          background: '#e3f2fd',
+          borderRadius: '8px',
+          border: '2px solid #2196F3',
+          marginBottom: '2rem'
+        }}>
+          <p style={{ margin: 0, color: '#1565c0', fontWeight: 'bold' }}>
+            ℹ️ You are viewing coaches in read-only mode. Only coaches can add or modify entries.
+          </p>
+        </div>
+      )}
+
+      <CoachList coaches={coaches} onDelete={handleDelete} canDelete={isCoach} />
     </div>
   )
 }

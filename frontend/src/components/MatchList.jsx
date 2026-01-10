@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-export default function MatchList({ matches, onDelete }) {
+export default function MatchList({ matches, onDelete, canDelete = true }) {
   if (matches.length === 0) {
     return <p>No matches scheduled yet. Add one above!</p>
   }
@@ -36,20 +36,22 @@ export default function MatchList({ matches, onDelete }) {
                   👤 Coach: {match.coachId?.firstName} {match.coachId?.lastName}
                 </span>
               </div>
-              <button 
-                onClick={() => onDelete(match._id)}
-                style={{ 
-                  background: '#ff4444', 
-                  color: 'white', 
-                  border: 'none',
-                  padding: '0.5rem 1.5rem',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Delete
-              </button>
+              {canDelete && (
+                <button 
+                  onClick={() => onDelete(match._id)}
+                  style={{ 
+                    background: '#ff4444', 
+                    color: 'white', 
+                    border: 'none',
+                    padding: '0.5rem 1.5rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Delete
+                </button>
+              )}
             </div>
           </li>
         ))}
@@ -71,4 +73,5 @@ MatchList.propTypes = {
     })
   ).isRequired,
   onDelete: PropTypes.func.isRequired,
+  canDelete: PropTypes.bool,
 }

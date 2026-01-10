@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-export default function FacilityList({ facilities, onDelete }) {
+export default function FacilityList({ facilities, onDelete, canDelete = true }) {
   if (facilities.length === 0) {
     return <p>No facilities yet. Add one above!</p>
   }
@@ -51,20 +51,22 @@ export default function FacilityList({ facilities, onDelete }) {
                 👥 Capacity: {facility.capacity}
               </span>
             </div>
-            <button 
-              onClick={() => onDelete(facility._id)}
-              style={{ 
-                background: '#ff4444', 
-                color: 'white', 
-                border: 'none',
-                padding: '0.5rem 1.5rem',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Delete
-            </button>
+            {canDelete && (
+              <button 
+                onClick={() => onDelete(facility._id)}
+                style={{ 
+                  background: '#ff4444', 
+                  color: 'white', 
+                  border: 'none',
+                  padding: '0.5rem 1.5rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                Delete
+              </button>
+            )}
           </li>
         ))}
       </ul>
@@ -83,4 +85,5 @@ FacilityList.propTypes = {
     })
   ).isRequired,
   onDelete: PropTypes.func.isRequired,
+  canDelete: PropTypes.bool,
 }
