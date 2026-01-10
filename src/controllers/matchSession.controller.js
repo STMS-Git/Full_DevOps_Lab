@@ -1,4 +1,4 @@
-import MatchSession from '../models/matchSession.model.js'
+import MatchSession from '../models/MatchSession.js'
 
 /**
  * List all match sessions with populated fields
