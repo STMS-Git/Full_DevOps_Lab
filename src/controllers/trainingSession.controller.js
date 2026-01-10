@@ -60,7 +60,7 @@ export async function createTrainingSession (req, res, next) {
       isMandatory = false
     } = req.body
 
-    // Validation basique
+    // Basic validation (we verify that the date, slot, duration, facilityID, coachID and teamID exist)
     if (!eventDate || !eventSlot || !duration || !facilityId || !coachId || !teamId) {
       return res.status(400).json({
         success: false,
@@ -68,7 +68,7 @@ export async function createTrainingSession (req, res, next) {
       })
     }
 
-    // Vérifier que la facility existe
+    // We verify that the facility itself exists
     const facility = await Facility.findById(facilityId)
     if (!facility) {
       return res.status(404).json({
@@ -77,7 +77,7 @@ export async function createTrainingSession (req, res, next) {
       })
     }
 
-    // Vérifier que le coach existe
+    // We verify that the coach exists
     const coach = await Coach.findById(coachId)
     if (!coach) {
       return res.status(404).json({
@@ -86,7 +86,7 @@ export async function createTrainingSession (req, res, next) {
       })
     }
 
-    // Vérifier que la team existe
+    // We verify that the team exists
     const team = await Team.findById(teamId)
     if (!team) {
       return res.status(404).json({
@@ -95,7 +95,7 @@ export async function createTrainingSession (req, res, next) {
       })
     }
 
-    // Créer le nouvel entraînement
+    // We create the new training
     const training = new TrainingSession({
       eventDate,
       eventSlot,
@@ -111,10 +111,10 @@ export async function createTrainingSession (req, res, next) {
       eventType: 'training'
     })
 
-    // Sauvegarder dans MongoDB
+    // We save in MongoDB
     await training.save()
 
-    // Remplir les références
+    // We fill in the references
     await training.populate('facilityId coachId teamId')
 
     res.status(201).json({
