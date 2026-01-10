@@ -6,9 +6,9 @@ import {
   updateFacility,
   deleteFacility
 } from '../../../src/controllers/facility.controller.js'
-import Facility from '../../../src/models/facility.model.js'
+import Facility from '../../../src/models/Facility.js'
 
-vi.mock('../../../src/models/facility.model.js')
+vi.mock('../../../src/models/Facility.js')
 
 describe('Facility Controller - Unit Tests', () => {
   let req, res, next

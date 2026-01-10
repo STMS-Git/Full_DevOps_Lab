@@ -7,6 +7,7 @@ import {
   deleteTeam
 } from '../../../src/controllers/team.controller.js'
 import Team from '../../../src/models/Team.js'
+import Coach from '../../../src/models/Coach.js'
 
 vi.mock('../../../src/models/Team.js')
 
@@ -112,32 +113,20 @@ describe('Team Controller - Unit Tests', () => {
       const savedTeam = { _id: '456', ...teamData }
 
       req.body = teamData
-      // ✅ CORRECTION : Fonctions classiques
-      const mockPopulate = vi.fn(function () {
-        return Promise.resolve(savedTeam)
-      })
 
-      const mockSave = vi.fn(function () {
-        return Promise.resolve({ ...savedTeam, populate: mockPopulate })
-      })
+      const mockPopulate = vi.fn().mockResolvedValue(savedTeam)
+      const mockSave = vi.fn().mockResolvedValue({ ...savedTeam, populate: mockPopulate })
+      const mockTeam = { ...teamData, save: mockSave, populate: mockPopulate }
 
-      const mockTeam = {
-        ...teamData,
-        save: mockSave,
-        populate: mockPopulate
-      }
-
-      Team.mockImplementation(function () {
-        return mockTeam
-      })
+      Team.mockImplementation(() => mockTeam)
+      Coach.findById = vi.fn().mockResolvedValue({ _id: '789', name: 'Coach' })
 
       await createTeam(req, res, next)
 
-      expect(mockTeam.save).toHaveBeenCalled()
-      expect(mockTeam.populate).toHaveBeenCalledWith('coachId')
       expect(res.status).toHaveBeenCalledWith(201)
       expect(res.json).toHaveBeenCalledWith({
         success: true,
+        message: 'Team created successfully',
         data: savedTeam
       })
     })

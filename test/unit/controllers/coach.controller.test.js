@@ -6,9 +6,9 @@ import {
   updateCoach,
   deleteCoach
 } from '../../../src/controllers/coach.controller.js'
-import Coach from '../../../src/models/coach.model.js'
+import Coach from '../../../src/models/Coach.js'
 
-vi.mock('../../../src/models/coach.model.js')
+vi.mock('../../../src/models/Coach.js')
 
 describe('Coach Controller - Unit Tests', () => {
   let req, res, next
