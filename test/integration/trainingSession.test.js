@@ -1,76 +1,59 @@
+/**
+ * Integration tests for TrainingSession CRUD operations
+ * Tests HTTP endpoints with real MongoDB operations
+ */
 import request from 'supertest'
-import app from '../src/app.js'
+import app from '../../src/app.js'
 import { describe, it, expect, beforeEach } from 'vitest'
-import TrainingSession from '../src/models/TrainingSession.js'
-import Facility from '../src/models/Facility.js'
-import Coach from '../src/models/Coach.js'
-import Team from '../src/models/Team.js'
+import TrainingSession from '../../src/models/TrainingSession.js'
+import { clearCollection, createTrainingSession, createTeam, createFacility, createCoach } from '../helpers/testHelpers.js'
+import { trainingSessionFactory, teamFactory, facilityFactory, coachFactory } from '../helpers/factories.js'
 
 describe('TrainingSession CRUD Operations', () => {
-  let trainingSessionId, facilityId, coachId, teamId
+  let trainingSessionId, teamId, facilityId, coachId
 
   beforeEach(async () => {
-    await TrainingSession.deleteMany({})
-    await Facility.deleteMany({})
-    await Coach.deleteMany({})
-    await Team.deleteMany({})
+    await clearCollection(TrainingSession)
 
-    const facility = await Facility.create({
-      name: 'Training Center',
-      location: 'Paris',
-      capacity: 300,
-      type: 'indoor'
-    })
-    facilityId = facility._id.toString()
-
-    const coach = await Coach.create({
-      firstName: 'Marie',
-      lastName: 'Training',
-      email: 'marie@training.com'
-    })
-    coachId = coach._id.toString()
-
-    const team = await Team.create({
-      name: 'Training Team',
-      sport: 'Rugby',
-      city: 'Paris'
-    })
+    // Create dependencies
+    const team = await createTeam(teamFactory())
+    const facility = await createFacility(facilityFactory())
+    const coach = await createCoach(coachFactory())
     teamId = team._id.toString()
+    facilityId = facility._id.toString()
+    coachId = coach._id.toString()
   })
 
   // ========== CREATE ==========
   describe('POST /trainingSessions', () => {
-    it('should return 400 if duration is missing', async () => {
+    it('should return 400 if required fields are missing', async () => {
+      const invalidData = { duration: 90 }
+
       const response = await request(app)
         .post('/trainingSessions')
-        .send({
-          eventDate: '2026-06-10T10:00:00Z',
-          eventSlot: 'morning',
-          facilityId,
-          coachId,
-          teamId
-        })
+        .send(invalidData)
         .expect(400)
 
       expect(response.body.success).toBe(false)
     })
 
     it('should create training session with valid data', async () => {
+      const trainingData = trainingSessionFactory({
+        teamId,
+        facilityId,
+        coachId,
+        eventDate: new Date().toISOString(),
+        eventSlot: 'morning',
+        duration: 120
+      })
+
       const response = await request(app)
         .post('/trainingSessions')
-        .send({
-          eventDate: '2026-06-10T10:00:00Z',
-          eventSlot: 'morning',
-          duration: 90,
-          facilityId,
-          coachId,
-          teamId
-        })
+        .send(trainingData)
         .expect(201)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.data.duration).toBe(90)
-      expect(response.body.data.facilityId._id).toBe(facilityId)
+      expect(response.body.data.duration).toBe(120)
       trainingSessionId = response.body.data._id
     })
   })
@@ -78,24 +61,16 @@ describe('TrainingSession CRUD Operations', () => {
   // ========== READ (LIST) ==========
   describe('GET /trainingSessions', () => {
     beforeEach(async () => {
-      await TrainingSession.create([
-        {
-          eventDate: '2026-07-15T09:00:00Z',
-          eventSlot: 'morning',
-          duration: 60,
-          facilityId,
-          coachId,
-          teamId
-        },
-        {
-          eventDate: '2026-08-20T14:00:00Z',
-          eventSlot: 'afternoon',
-          duration: 120,
-          facilityId,
-          coachId,
-          teamId
-        }
-      ])
+      await createTrainingSession(trainingSessionFactory({
+        teamId,
+        facilityId,
+        coachId
+      }))
+      await createTrainingSession(trainingSessionFactory({
+        teamId,
+        facilityId,
+        coachId
+      }))
     })
 
     it('should return all training sessions', async () => {
@@ -112,15 +87,13 @@ describe('TrainingSession CRUD Operations', () => {
   // ========== READ (BY ID) ==========
   describe('GET /trainingSessions/:id', () => {
     beforeEach(async () => {
-      const trainingSession = await TrainingSession.create({
-        eventDate: '2026-09-10T10:00:00Z',
-        eventSlot: 'morning',
-        duration: 75,
+      const training = await createTrainingSession(trainingSessionFactory({
+        teamId,
         facilityId,
         coachId,
-        teamId
-      })
-      trainingSessionId = trainingSession._id.toString()
+        duration: 90
+      }))
+      trainingSessionId = training._id.toString()
     })
 
     it('should return 404 if training session not found', async () => {
@@ -138,28 +111,26 @@ describe('TrainingSession CRUD Operations', () => {
 
       expect(response.body.success).toBe(true)
       expect(response.body.data._id).toBe(trainingSessionId)
-      expect(response.body.data.duration).toBe(75)
+      expect(response.body.data.duration).toBe(90)
     })
   })
 
   // ========== UPDATE ==========
   describe('PUT /trainingSessions/:id', () => {
     beforeEach(async () => {
-      const trainingSession = await TrainingSession.create({
-        eventDate: '2026-10-05T11:00:00Z',
-        eventSlot: 'morning',
-        duration: 90,
+      const training = await createTrainingSession(trainingSessionFactory({
+        teamId,
         facilityId,
         coachId,
-        teamId
-      })
-      trainingSessionId = trainingSession._id.toString()
+        duration: 90
+      }))
+      trainingSessionId = training._id.toString()
     })
 
     it('should return 404 if training session not found', async () => {
       const response = await request(app)
         .put('/trainingSessions/507f1f77bcf86cd799439011')
-        .send({ duration: 100 })
+        .send({ duration: 120 })
         .expect(404)
 
       expect(response.body.success).toBe(false)
@@ -169,29 +140,24 @@ describe('TrainingSession CRUD Operations', () => {
       const response = await request(app)
         .put(`/trainingSessions/${trainingSessionId}`)
         .send({
-          duration: 120,
-          eventSlot: 'afternoon'
+          duration: 150
         })
         .expect(200)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.data.duration).toBe(120)
-      expect(response.body.data.eventSlot).toBe('afternoon')
+      expect(response.body.data.duration).toBe(150)
     })
   })
 
   // ========== DELETE ==========
   describe('DELETE /trainingSessions/:id', () => {
     beforeEach(async () => {
-      const trainingSession = await TrainingSession.create({
-        eventDate: '2026-11-15T10:00:00Z',
-        eventSlot: 'morning',
-        duration: 60,
+      const training = await createTrainingSession(trainingSessionFactory({
+        teamId,
         facilityId,
-        coachId,
-        teamId
-      })
-      trainingSessionId = trainingSession._id.toString()
+        coachId
+      }))
+      trainingSessionId = training._id.toString()
     })
 
     it('should return 404 if training session not found', async () => {

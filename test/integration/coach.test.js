@@ -1,34 +1,43 @@
+/**
+ * Integration tests for Coach CRUD operations
+ * Tests HTTP endpoints with real MongoDB operations
+ */
 import request from 'supertest'
-import app from '../src/app.js'
+import app from '../../src/app.js'
 import { describe, it, expect, beforeEach } from 'vitest'
-import Coach from '../src/models/Coach.js'
+import Coach from '../../src/models/Coach.js'
+import { clearCollection, createCoach } from '../helpers/testHelpers.js'
+import { coachFactory } from '../helpers/factories.js'
 
 describe('Coach CRUD Operations', () => {
   let coachId
 
   beforeEach(async () => {
-    await Coach.deleteMany({})
+    await clearCollection(Coach)
   })
 
   // ========== CREATE ==========
   describe('POST /coaches', () => {
     it('should return 400 if firstName is missing', async () => {
+      const invalidData = { lastName: 'Dupont', email: 'jean@example.com' }
       const response = await request(app)
         .post('/coaches')
-        .send({ lastName: 'Dupont', email: 'jean@example.com' })
+        .send(invalidData)
         .expect(400)
 
       expect(response.body.success).toBe(false)
     })
 
     it('should create coach with valid data', async () => {
+      const coachData = coachFactory({
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        email: 'jean@example.com'
+      })
+
       const response = await request(app)
         .post('/coaches')
-        .send({
-          firstName: 'Jean',
-          lastName: 'Dupont',
-          email: 'jean@example.com'
-        })
+        .send(coachData)
         .expect(201)
 
       expect(response.body.success).toBe(true)
@@ -41,10 +50,8 @@ describe('Coach CRUD Operations', () => {
   // ========== READ (LIST) ==========
   describe('GET /coaches', () => {
     beforeEach(async () => {
-      await Coach.create([
-        { firstName: 'Marie', lastName: 'Martin', email: 'marie@example.com' },
-        { firstName: 'Pierre', lastName: 'Pierre', email: 'pierre@example.com' }
-      ])
+      await createCoach(coachFactory({ firstName: 'Marie', lastName: 'Martin', email: 'marie@example.com' }))
+      await createCoach(coachFactory({ firstName: 'Pierre', lastName: 'Pierre', email: 'pierre@example.com' }))
     })
 
     it('should return all coaches', async () => {
@@ -61,11 +68,11 @@ describe('Coach CRUD Operations', () => {
   // ========== READ (BY ID) ==========
   describe('GET /coaches/:id', () => {
     beforeEach(async () => {
-      const coach = await Coach.create({
+      const coach = await createCoach(coachFactory({
         firstName: 'Luc',
         lastName: 'Bernard',
         email: 'luc@example.com'
-      })
+      }))
       coachId = coach._id.toString()
     })
 
@@ -91,11 +98,11 @@ describe('Coach CRUD Operations', () => {
   // ========== UPDATE ==========
   describe('PUT /coaches/:id', () => {
     beforeEach(async () => {
-      const coach = await Coach.create({
+      const coach = await createCoach(coachFactory({
         firstName: 'Jean',
         lastName: 'Old',
         email: 'jeanold@example.com'
-      })
+      }))
       coachId = coach._id.toString()
     })
 
@@ -126,11 +133,11 @@ describe('Coach CRUD Operations', () => {
   // ========== DELETE ==========
   describe('DELETE /coaches/:id', () => {
     beforeEach(async () => {
-      const coach = await Coach.create({
+      const coach = await createCoach(coachFactory({
         firstName: 'Anna',
         lastName: 'Delete',
         email: 'anna@example.com'
-      })
+      }))
       coachId = coach._id.toString()
     })
 
