@@ -50,17 +50,17 @@ app.get('/health', (req, res) => {
 })
 
 // Routes existantes
-app.use('/api/version', versionRoute)
-app.use('/api/info', infoRoute)
-app.use('/api/boom', boomRoute)
+app.use('/version', versionRoute)
+app.use('/info', infoRoute)
+app.use('/boom', boomRoute)
 
 // MongoDB Routes (NEW)
-app.use('/api/facilities', facilityRoute)
-app.use('/api/coaches', coachRoute)
-app.use('/api/teams', teamRoute)
-app.use('/api/matchSessions', matchSessionRoute)
-app.use('/api/trainingSessions', trainingSessionRoute)
-app.use('/api/auth', authRoute)
+app.use('/facilities', facilityRoute)
+app.use('/coaches', coachRoute)
+app.use('/teams', teamRoute)
+app.use('/matchSessions', matchSessionRoute)
+app.use('/trainingSessions', trainingSessionRoute)
+app.use('/auth', authRoute)
 
 // Global error middleware last
 app.use(errorHandler)

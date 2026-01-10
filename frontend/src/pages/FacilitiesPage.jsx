@@ -12,7 +12,7 @@ export default function FacilitiesPage() {
 
   async function loadFacilities() {
     try {
-      const res = await fetch('/api/facilities')
+      const res = await fetch('/facilities')
       const data = await res.json()
       setFacilities(data.data || data)
     } catch (error) {
@@ -31,7 +31,7 @@ export default function FacilitiesPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/api/facilities/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/facilities/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setFacilities(prev => prev.filter(f => f._id !== id))
     }

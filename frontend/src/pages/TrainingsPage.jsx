@@ -15,7 +15,7 @@ export default function TrainingsPage() {
 
   async function loadTrainings() {
     try {
-      const res = await fetch('/api/trainingSessions')
+      const res = await fetch('/trainingSessions')
       const data = await res.json()
       setTrainings(data.data || data)
     } catch (error) {
@@ -28,9 +28,9 @@ export default function TrainingsPage() {
   async function loadResources() {
     try {
       const [teamsRes, coachesRes, facilitiesRes] = await Promise.all([
-        fetch('/api/teams'),
-        fetch('/api/coaches'),
-        fetch('/api/facilities')
+        fetch('/teams'),
+        fetch('/coaches'),
+        fetch('/facilities')
       ])
       const teamsData = await teamsRes.json()
       const coachesData = await coachesRes.json()
@@ -54,7 +54,7 @@ export default function TrainingsPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/api/trainingSessions/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/trainingSessions/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setTrainings(prev => prev.filter(t => t._id !== id))
     }

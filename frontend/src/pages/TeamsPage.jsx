@@ -13,7 +13,7 @@ export default function TeamsPage() {
 
   async function loadTeams() {
     try {
-      const res = await fetch('/api/teams')
+      const res = await fetch('/teams')
       const data = await res.json()
       setTeams(data.data || data)
     } catch (error) {
@@ -25,7 +25,7 @@ export default function TeamsPage() {
 
   async function loadCoaches() {
     try {
-      const res = await fetch('/api/coaches')
+      const res = await fetch('/coaches')
       const data = await res.json()
       setCoaches(data.data || data)
     } catch (error) {
@@ -43,7 +43,7 @@ export default function TeamsPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/teams/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setTeams(prev => prev.filter(t => t._id !== id))
     }

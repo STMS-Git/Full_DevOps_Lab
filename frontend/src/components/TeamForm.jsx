@@ -19,7 +19,7 @@ export default function TeamForm({ onCreated, coaches }) {
       coachId: coachId || undefined
     }
 
-    const res = await fetch('/api/teams', {
+    const res = await fetch('/teams', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(teamData),

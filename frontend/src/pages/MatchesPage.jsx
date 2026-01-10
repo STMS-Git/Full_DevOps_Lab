@@ -15,7 +15,7 @@ export default function MatchesPage() {
 
   async function loadMatches() {
     try {
-      const res = await fetch('/api/matchSessions')
+      const res = await fetch('/matchSessions')
       const data = await res.json()
       setMatches(data.data || data)
     } catch (error) {
@@ -28,9 +28,9 @@ export default function MatchesPage() {
   async function loadResources() {
     try {
       const [teamsRes, coachesRes, facilitiesRes] = await Promise.all([
-        fetch('/api/teams'),
-        fetch('/api/coaches'),
-        fetch('/api/facilities')
+        fetch('/teams'),
+        fetch('/coaches'),
+        fetch('/facilities')
       ])
       const teamsData = await teamsRes.json()
       const coachesData = await coachesRes.json()
@@ -54,7 +54,7 @@ export default function MatchesPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/api/matchSessions/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/matchSessions/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setMatches(prev => prev.filter(m => m._id !== id))
     }

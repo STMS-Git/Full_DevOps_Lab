@@ -22,7 +22,7 @@ export default function MatchForm({ onCreated, teams, coaches, facilities }) {
       opponentTeamName
     }
 
-    const res = await fetch('/api/matchSessions', {
+    const res = await fetch('/matchSessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(matchData),

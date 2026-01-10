@@ -11,7 +11,7 @@ export default function CoachForm({ onCreated }) {
   async function handleSubmit(e) {
     e.preventDefault()
 
-    const res = await fetch('/api/coaches', {
+    const res = await fetch('/coaches', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

@@ -12,7 +12,7 @@ export default function CoachesPage() {
 
   async function loadCoaches() {
     try {
-      const res = await fetch('/api/coaches')
+      const res = await fetch('/coaches')
       const data = await res.json()
       setCoaches(data.data || data)
     } catch (error) {
@@ -31,7 +31,7 @@ export default function CoachesPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/api/coaches/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/coaches/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setCoaches(prev => prev.filter(c => c._id !== id))
     }

@@ -22,11 +22,11 @@ export default function HomePage() {
   async function loadDashboardData() {
     try {
       const [coachesRes, teamsRes, facilitiesRes, matchesRes, trainingsRes] = await Promise.all([
-        fetch('/api/coaches'),
-        fetch('/api/teams'),
-        fetch('/api/facilities'),
-        fetch('/api/matchSessions'),
-        fetch('/api/trainingSessions')
+        fetch('/coaches'),
+        fetch('/teams'),
+        fetch('/facilities'),
+        fetch('/matchSessions'),
+        fetch('/trainingSessions')
       ])
 
       const coaches = await coachesRes.json()

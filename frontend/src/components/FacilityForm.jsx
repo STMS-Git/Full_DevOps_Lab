@@ -17,7 +17,7 @@ export default function FacilityForm({ onCreated }) {
       type
     }
 
-    const res = await fetch('/api/facilities', {
+    const res = await fetch('/facilities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(facilityData),

@@ -32,7 +32,7 @@ export default function TrainingForm({ onCreated, teams, coaches, facilities }) 
       isMandatory
     }
 
-    const res = await fetch('/api/trainingSessions', {
+    const res = await fetch('/trainingSessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(trainingData),
