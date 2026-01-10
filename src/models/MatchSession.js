@@ -44,8 +44,12 @@ const matchSessionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
       required: true
-    }
+    },
 
+    opponentTeamName: { // équipe adverse
+      type: String,
+      required: false
+    }
   },
   {
     timestamps: true,
