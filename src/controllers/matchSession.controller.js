@@ -1,13 +1,15 @@
 import MatchSession from '../models/MatchSession.js'
 import Team from '../models/Team.js'
 import Facility from '../models/Facility.js'
+import Coach from '../models/Coach.js'
 
 export async function listMatches (req, res, next) {
   try {
     const sessions = await MatchSession.find()
       .populate('teamId')
       .populate('facilityId')
-      .sort({ date: -1 })
+      .populate('coachId')
+      .sort({ eventDate: -1 })
 
     res.json({
       success: true,
@@ -24,6 +26,7 @@ export async function getMatchById (req, res, next) {
     const session = await MatchSession.findById(req.params.id)
       .populate('teamId')
       .populate('facilityId')
+      .populate('coachId')
 
     if (!session) {
       return res.status(404).json({
@@ -43,15 +46,16 @@ export async function getMatchById (req, res, next) {
 
 export async function createMatch (req, res, next) {
   try {
-    const { eventDate, eventSlot, opponentTeam, teamId, facilityId } = req.body
+    const { eventDate, eventSlot, eventType, teamId, facilityId, coachId } = req.body
 
-    if (!eventDate || !eventSlot || !opponentTeam || !teamId || !facilityId) {
+    if (!eventDate || !eventSlot || !teamId || !facilityId || !coachId) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields'
       })
     }
 
+    // Verify team exists
     const team = await Team.findById(teamId)
     if (!team) {
       return res.status(404).json({
@@ -60,6 +64,7 @@ export async function createMatch (req, res, next) {
       })
     }
 
+    // Verify facility exists
     const facility = await Facility.findById(facilityId)
     if (!facility) {
       return res.status(404).json({
@@ -68,17 +73,27 @@ export async function createMatch (req, res, next) {
       })
     }
 
+    // Verify coach exists
+    const coach = await Coach.findById(coachId)
+    if (!coach) {
+      return res.status(404).json({
+        success: false,
+        message: `Coach with ID ${coachId} not found`
+      })
+    }
+
+    // Create match session
     const match = new MatchSession({
       eventDate,
       eventSlot,
-      opponentTeam,
+      eventType: eventType || 'match',
       teamId,
       facilityId,
-      eventType: 'match'
+      coachId
     })
 
     await match.save()
-    await match.populate('teamId facilityId')
+    await match.populate('teamId facilityId coachId')
 
     res.status(201).json({
       success: true,
@@ -92,15 +107,16 @@ export async function createMatch (req, res, next) {
 
 export async function updateMatch (req, res, next) {
   try {
-    const { eventDate, eventSlot, opponentTeam } = req.body
+    const { eventDate, eventSlot, eventType } = req.body
 
     const match = await MatchSession.findByIdAndUpdate(
       req.params.id,
-      { eventDate, eventSlot, opponentTeam },
+      { eventDate, eventSlot, eventType },
       { new: true, runValidators: true }
     )
       .populate('teamId')
       .populate('facilityId')
+      .populate('coachId')
 
     if (!match) {
       return res.status(404).json({

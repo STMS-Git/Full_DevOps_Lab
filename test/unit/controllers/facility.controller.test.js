@@ -39,6 +39,7 @@ describe('Facility Controller - Unit Tests', () => {
       expect(sortMock).toHaveBeenCalledWith({ name: 1 })
       expect(res.json).toHaveBeenCalledWith({
         success: true,
+        count: 2,
         data: mockFacilities
       })
     })
@@ -102,12 +103,14 @@ describe('Facility Controller - Unit Tests', () => {
 
       req.body = facilityData
 
-      // ✅ CORRECTION : Fonction classique
-      const mockSave = vi.fn(function () {
-        return Promise.resolve(savedFacility)
+      const mockFacility = {
+        ...facilityData,
+        save: vi.fn().mockResolvedValue()
+      }
+      mockFacility.save.mockImplementation(async function () {
+        Object.assign(this, savedFacility)
       })
 
-      const mockFacility = { ...facilityData, save: mockSave }
       Facility.mockImplementation(function () {
         return mockFacility
       })
@@ -118,7 +121,8 @@ describe('Facility Controller - Unit Tests', () => {
       expect(res.status).toHaveBeenCalledWith(201)
       expect(res.json).toHaveBeenCalledWith({
         success: true,
-        data: savedFacility
+        message: 'Facility created successfully',
+        data: mockFacility
       })
     })
 
@@ -138,12 +142,9 @@ describe('Facility Controller - Unit Tests', () => {
       const error = new Error('Database error')
       req.body = { name: 'Test Facility', location: 'Test City' }
 
-      // ✅ CORRECTION : Fonction classique
-      const mockSave = vi.fn(function () {
-        return Promise.reject(error)
-      })
-
+      const mockSave = vi.fn().mockRejectedValue(error)
       const mockFacility = { ...req.body, save: mockSave }
+
       Facility.mockImplementation(function () {
         return mockFacility
       })
@@ -171,6 +172,7 @@ describe('Facility Controller - Unit Tests', () => {
       )
       expect(res.json).toHaveBeenCalledWith({
         success: true,
+        message: 'Facility updated successfully',
         data: updatedFacility
       })
     })

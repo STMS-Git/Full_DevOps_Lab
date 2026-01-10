@@ -26,8 +26,8 @@ describe('Coach Controller - Unit Tests', () => {
   describe('listCoaches', () => {
     it('should return all coaches sorted by name', async () => {
       const mockCoaches = [
-        { _id: '1', name: 'Coach A', specialty: 'Football' },
-        { _id: '2', name: 'Coach B', specialty: 'Basketball' }
+        { _id: '1', firstName: 'John', lastName: 'Doe', email: 'john@test.com' },
+        { _id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane@test.com' }
       ]
 
       const sortMock = vi.fn().mockResolvedValue(mockCoaches)
@@ -36,9 +36,10 @@ describe('Coach Controller - Unit Tests', () => {
       await listCoaches(req, res, next)
 
       expect(Coach.find).toHaveBeenCalled()
-      expect(sortMock).toHaveBeenCalledWith({ name: 1 })
+      expect(sortMock).toHaveBeenCalledWith({ lastName: 1, firstName: 1 })
       expect(res.json).toHaveBeenCalledWith({
         success: true,
+        count: 2,
         data: mockCoaches
       })
     })
@@ -57,7 +58,7 @@ describe('Coach Controller - Unit Tests', () => {
 
   describe('getCoachById', () => {
     it('should return a coach by id', async () => {
-      const mockCoach = { _id: '123', name: 'Coach Test', specialty: 'Football' }
+      const mockCoach = { _id: '123', firstName: 'Test', lastName: 'Coach', email: 'test@coach.com' }
       req.params.id = '123'
 
       Coach.findById = vi.fn().mockResolvedValue(mockCoach)
@@ -97,17 +98,25 @@ describe('Coach Controller - Unit Tests', () => {
 
   describe('createCoach', () => {
     it('should create a coach successfully', async () => {
-      const coachData = { name: 'New Coach', specialty: 'Tennis' }
+      const coachData = {
+        firstName: 'New',
+        lastName: 'Coach',
+        email: 'new@coach.com',
+        specialization: 'Football'
+      }
       const savedCoach = { _id: '456', ...coachData }
 
       req.body = coachData
 
-      // ✅ CORRECTION : Utiliser une fonction classique au lieu d'une arrow function
-      const mockSave = vi.fn(function () {
-        return Promise.resolve(savedCoach)
+      const mockCoach = {
+        ...coachData,
+        save: vi.fn().mockResolvedValue()
+      }
+
+      mockCoach.save.mockImplementation(async function () {
+        Object.assign(this, savedCoach)
       })
 
-      const mockCoach = { ...coachData, save: mockSave }
       Coach.mockImplementation(function () {
         return mockCoach
       })
@@ -118,32 +127,34 @@ describe('Coach Controller - Unit Tests', () => {
       expect(res.status).toHaveBeenCalledWith(201)
       expect(res.json).toHaveBeenCalledWith({
         success: true,
-        data: savedCoach
+        message: 'Coach created successfully',
+        data: mockCoach
       })
     })
 
     it('should return 400 if required fields are missing', async () => {
-      req.body = { name: 'Coach Without Specialty' }
+      req.body = { firstName: 'Coach' }
 
       await createCoach(req, res, next)
 
       expect(res.status).toHaveBeenCalledWith(400)
       expect(res.json).toHaveBeenCalledWith({
         success: false,
-        message: 'Name and specialty are required'
+        message: 'Missing required fields: firstName, lastName, email'
       })
     })
 
     it('should call next with error if save fails', async () => {
       const error = new Error('Database error')
-      req.body = { name: 'Coach Test', specialty: 'Football' }
+      req.body = {
+        firstName: 'Test',
+        lastName: 'Coach',
+        email: 'test@coach.com'
+      }
 
-      // ✅ CORRECTION : Fonction classique pour le mock
-      const mockSave = vi.fn(function () {
-        return Promise.reject(error)
-      })
-
+      const mockSave = vi.fn().mockRejectedValue(error)
       const mockCoach = { ...req.body, save: mockSave }
+
       Coach.mockImplementation(function () {
         return mockCoach
       })
@@ -156,9 +167,18 @@ describe('Coach Controller - Unit Tests', () => {
 
   describe('updateCoach', () => {
     it('should update a coach successfully', async () => {
-      const updatedCoach = { _id: '123', name: 'Updated Coach', specialty: 'Golf' }
+      const updatedCoach = {
+        _id: '123',
+        firstName: 'Updated',
+        lastName: 'Coach',
+        email: 'updated@coach.com'
+      }
       req.params.id = '123'
-      req.body = { name: 'Updated Coach', specialty: 'Golf' }
+      req.body = {
+        firstName: 'Updated',
+        lastName: 'Coach',
+        email: 'updated@coach.com'
+      }
 
       Coach.findByIdAndUpdate = vi.fn().mockResolvedValue(updatedCoach)
 
@@ -166,18 +186,26 @@ describe('Coach Controller - Unit Tests', () => {
 
       expect(Coach.findByIdAndUpdate).toHaveBeenCalledWith(
         '123',
-        req.body,
+        {
+          firstName: 'Updated',
+          lastName: 'Coach',
+          email: 'updated@coach.com',
+          specialization: undefined,
+          experience: undefined,
+          isActive: undefined
+        },
         { new: true, runValidators: true }
       )
       expect(res.json).toHaveBeenCalledWith({
         success: true,
+        message: 'Coach updated successfully',
         data: updatedCoach
       })
     })
 
     it('should return 404 if coach not found', async () => {
       req.params.id = '999'
-      req.body = { name: 'Updated Coach' }
+      req.body = { firstName: 'Updated Coach' }
       Coach.findByIdAndUpdate = vi.fn().mockResolvedValue(null)
 
       await updateCoach(req, res, next)
@@ -192,7 +220,7 @@ describe('Coach Controller - Unit Tests', () => {
     it('should call next with error if update fails', async () => {
       const error = new Error('Database error')
       req.params.id = '123'
-      req.body = { name: 'Updated Coach' }
+      req.body = { firstName: 'Updated Coach' }
       Coach.findByIdAndUpdate = vi.fn().mockRejectedValue(error)
 
       await updateCoach(req, res, next)
@@ -203,7 +231,7 @@ describe('Coach Controller - Unit Tests', () => {
 
   describe('deleteCoach', () => {
     it('should delete a coach successfully', async () => {
-      const deletedCoach = { _id: '123', name: 'Deleted Coach' }
+      const deletedCoach = { _id: '123', firstName: 'Deleted', lastName: 'Coach' }
       req.params.id = '123'
 
       Coach.findByIdAndDelete = vi.fn().mockResolvedValue(deletedCoach)
