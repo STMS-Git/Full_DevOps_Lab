@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import PropTypes from 'prop-types'
+import { API_URL } from '../config/api'
 
 const AuthContext = createContext(null)
 
@@ -28,7 +29,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(getUserFromToken)
 
   const login = async (email, password) => {
-    const res = await fetch('/auth/login', {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -54,7 +55,7 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (firstName, lastName, email, password, role = 'player') => {
-    const res = await fetch('/auth/register', {
+    const res = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firstName, lastName, email, password, role })

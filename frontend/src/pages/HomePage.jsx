@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config/api'
 
 export default function HomePage() {
   const { user } = useAuth()
@@ -22,11 +23,11 @@ export default function HomePage() {
   async function loadDashboardData() {
     try {
       const [coachesRes, teamsRes, facilitiesRes, matchesRes, trainingsRes] = await Promise.all([
-        fetch('/coaches'),
-        fetch('/teams'),
-        fetch('/facilities'),
-        fetch('/matchSessions'),
-        fetch('/trainingSessions')
+        fetch(`${API_URL}/coaches`),
+        fetch(`${API_URL}/teams`),
+        fetch(`${API_URL}/facilities`),
+        fetch(`${API_URL}/matchSessions`),
+        fetch(`${API_URL}/trainingSessions`)
       ])
 
       const coaches = await coachesRes.json()

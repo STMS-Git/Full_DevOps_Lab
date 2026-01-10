@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { API_URL } from '../config/api'
 
 export default function CoachForm({ onCreated }) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [specialization, setSpecialization] = useState('Football') // Nouveau
+  const [specialization, setSpecialization] = useState('Football')
 
   async function handleSubmit(e) {
     e.preventDefault()
 
-    const res = await fetch('/coaches', {
+    const res = await fetch(`${API_URL}/coaches`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -19,7 +20,7 @@ export default function CoachForm({ onCreated }) {
         lastName, 
         email, 
         phoneNumber,
-        specialization // Ajouté
+        specialization
       }),
     })
 
@@ -77,7 +78,6 @@ export default function CoachForm({ onCreated }) {
           style={{ padding: '0.7rem', borderRadius: '4px', border: '1px solid #ccc' }}
         />
         
-        {/* Nouveau : Sélection du sport */}
         <select
           value={specialization}
           onChange={(e) => setSpecialization(e.target.value)}

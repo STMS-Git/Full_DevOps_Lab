@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { API_URL } from '../config/api'
 
 export default function TeamForm({ onCreated, coaches }) {
   const [name, setName] = useState('')
@@ -19,7 +20,7 @@ export default function TeamForm({ onCreated, coaches }) {
       coachId: coachId || undefined
     }
 
-    const res = await fetch('/teams', {
+    const res = await fetch(`${API_URL}/teams`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(teamData),

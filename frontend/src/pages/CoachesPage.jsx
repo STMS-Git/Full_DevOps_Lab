@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import CoachList from '../components/CoachList'
 import CoachForm from '../components/CoachForm'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config/api'
 
 export default function CoachesPage() {
   const { user } = useAuth()
@@ -12,7 +13,7 @@ export default function CoachesPage() {
 
   async function loadCoaches() {
     try {
-      const res = await fetch('/coaches')
+      const res = await fetch(`${API_URL}/coaches`)
       const data = await res.json()
       setCoaches(data.data || data)
     } catch (error) {
@@ -31,7 +32,7 @@ export default function CoachesPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/coaches/${id}`, { method: 'DELETE' })
+    const res = await fetch(`${API_URL}/coaches/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setCoaches(prev => prev.filter(c => c._id !== id))
     }
@@ -43,7 +44,6 @@ export default function CoachesPage() {
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
       <h2>👥 Coaches</h2>
       
-      {/* Afficher le formulaire uniquement pour les coaches */}
       {isCoach ? (
         <CoachForm onCreated={loadCoaches} />
       ) : (

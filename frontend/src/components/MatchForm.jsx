@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { API_URL } from '../config/api'
 
 export default function MatchForm({ onCreated, teams, coaches, facilities }) {
   const [eventDate, setEventDate] = useState('')
@@ -22,7 +23,7 @@ export default function MatchForm({ onCreated, teams, coaches, facilities }) {
       opponentTeamName
     }
 
-    const res = await fetch('/matchSessions', {
+    const res = await fetch(`${API_URL}/matchSessions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(matchData),

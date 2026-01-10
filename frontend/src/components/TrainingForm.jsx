@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { API_URL } from '../config/api'
 
 export default function TrainingForm({ onCreated, teams, coaches, facilities }) {
   const [eventDate, setEventDate] = useState('')
@@ -32,7 +33,7 @@ export default function TrainingForm({ onCreated, teams, coaches, facilities }) 
       isMandatory
     }
 
-    const res = await fetch('/trainingSessions', {
+    const res = await fetch(`${API_URL}/trainingSessions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(trainingData),

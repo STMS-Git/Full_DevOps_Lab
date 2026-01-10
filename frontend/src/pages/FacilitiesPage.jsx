@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import FacilityList from '../components/FacilityList'
 import FacilityForm from '../components/FacilityForm'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config/api'
 
 export default function FacilitiesPage() {
   const { user } = useAuth()
@@ -12,7 +13,7 @@ export default function FacilitiesPage() {
 
   async function loadFacilities() {
     try {
-      const res = await fetch('/facilities')
+      const res = await fetch(`${API_URL}/facilities`)
       const data = await res.json()
       setFacilities(data.data || data)
     } catch (error) {
@@ -31,7 +32,7 @@ export default function FacilitiesPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/facilities/${id}`, { method: 'DELETE' })
+    const res = await fetch(`${API_URL}/facilities/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setFacilities(prev => prev.filter(f => f._id !== id))
     }

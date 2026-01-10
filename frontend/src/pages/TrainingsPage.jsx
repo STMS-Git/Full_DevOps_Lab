@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import TrainingList from '../components/TrainingList'
 import TrainingForm from '../components/TrainingForm'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config/api'
 
 export default function TrainingsPage() {
   const { user } = useAuth()
@@ -15,7 +16,7 @@ export default function TrainingsPage() {
 
   async function loadTrainings() {
     try {
-      const res = await fetch('/trainingSessions')
+      const res = await fetch(`${API_URL}/trainingSessions`)
       const data = await res.json()
       setTrainings(data.data || data)
     } catch (error) {
@@ -28,9 +29,9 @@ export default function TrainingsPage() {
   async function loadResources() {
     try {
       const [teamsRes, coachesRes, facilitiesRes] = await Promise.all([
-        fetch('/teams'),
-        fetch('/coaches'),
-        fetch('/facilities')
+        fetch(`${API_URL}/teams`),
+        fetch(`${API_URL}/coaches`),
+        fetch(`${API_URL}/facilities`)
       ])
       const teamsData = await teamsRes.json()
       const coachesData = await coachesRes.json()
@@ -54,7 +55,7 @@ export default function TrainingsPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/trainingSessions/${id}`, { method: 'DELETE' })
+    const res = await fetch(`${API_URL}/trainingSessions/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setTrainings(prev => prev.filter(t => t._id !== id))
     }

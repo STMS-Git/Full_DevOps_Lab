@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { API_URL } from '../config/api'
 
 export default function FacilityForm({ onCreated }) {
   const [name, setName] = useState('')
@@ -17,7 +18,7 @@ export default function FacilityForm({ onCreated }) {
       type
     }
 
-    const res = await fetch('/facilities', {
+    const res = await fetch(`${API_URL}/facilities`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(facilityData),

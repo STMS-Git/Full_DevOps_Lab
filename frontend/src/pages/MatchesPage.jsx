@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import MatchList from '../components/MatchList'
 import MatchForm from '../components/MatchForm'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config/api'
 
 export default function MatchesPage() {
   const { user } = useAuth()
@@ -15,7 +16,7 @@ export default function MatchesPage() {
 
   async function loadMatches() {
     try {
-      const res = await fetch('/matchSessions')
+      const res = await fetch(`${API_URL}/matchSessions`)
       const data = await res.json()
       setMatches(data.data || data)
     } catch (error) {
@@ -28,9 +29,9 @@ export default function MatchesPage() {
   async function loadResources() {
     try {
       const [teamsRes, coachesRes, facilitiesRes] = await Promise.all([
-        fetch('/teams'),
-        fetch('/coaches'),
-        fetch('/facilities')
+        fetch(`${API_URL}/teams`),
+        fetch(`${API_URL}/coaches`),
+        fetch(`${API_URL}/facilities`)
       ])
       const teamsData = await teamsRes.json()
       const coachesData = await coachesRes.json()
@@ -54,7 +55,7 @@ export default function MatchesPage() {
       alert('Only coaches can delete entries')
       return
     }
-    const res = await fetch(`/matchSessions/${id}`, { method: 'DELETE' })
+    const res = await fetch(`${API_URL}/matchSessions/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setMatches(prev => prev.filter(m => m._id !== id))
     }
