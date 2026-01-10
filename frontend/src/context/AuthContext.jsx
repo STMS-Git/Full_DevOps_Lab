@@ -4,7 +4,7 @@ import { API_URL } from '../config/api'
 
 const AuthContext = createContext(null)
 
-// Fonction pour décoder et récupérer l'utilisateur du token
+// Function to decode and to get the user's token
 function getUserFromToken() {
   const token = localStorage.getItem('token')
   if (!token) return null
