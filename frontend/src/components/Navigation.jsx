@@ -40,12 +40,16 @@ export default function Navigation() {
       <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem', alignItems: 'center' }}>
         {user ? (
           <>
-            <span style={{ color: '#666', fontSize: '0.9rem' }}>
-              {user.role === 'coach' ? '👔' : '⚽'} {user.email}
+            <span style={{ color: '#666', fontSize: '0.95rem' }}>
+              {user.role === 'coach' ? '👔' : '⚽'} 
+              <strong style={{ marginLeft: '0.3rem' }}>
+                {user.firstName} {user.lastName}
+              </strong>
               <span style={{ 
                 color: user.role === 'coach' ? '#1976d2' : '#4CAF50', 
                 fontWeight: 'bold',
-                marginLeft: '0.5rem'
+                marginLeft: '0.5rem',
+                fontSize: '0.85rem'
               }}>
                 ({user.role})
               </span>

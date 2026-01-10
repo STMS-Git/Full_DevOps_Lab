@@ -11,7 +11,9 @@ function getUserFromToken() {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
     return { 
-      id: payload.userId, 
+      id: payload.userId,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
       email: payload.email,
       role: payload.role 
     }
@@ -38,7 +40,9 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', data.token)
       const payload = JSON.parse(atob(data.token.split('.')[1]))
       const userData = { 
-        id: payload.userId, 
+        id: payload.userId,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
         email: payload.email,
         role: payload.role 
       }
@@ -49,19 +53,27 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const register = async (email, password, role = 'player') => {
+  const register = async (firstName, lastName, email, password, role = 'player') => {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, role })
+      body: JSON.stringify({ firstName, lastName, email, password, role })
     })
 
     const data = await res.json()
 
-    if (res.ok) {
-      // ✅ Register ne renvoie pas de token, donc on fait un login automatique
-      const loginResult = await login(email, password)
-      return loginResult
+    if (res.ok && data.token) {
+      localStorage.setItem('token', data.token)
+      const payload = JSON.parse(atob(data.token.split('.')[1]))
+      const userData = { 
+        id: payload.userId,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        email: payload.email,
+        role: payload.role 
+      }
+      setUser(userData)
+      return { success: true, user: userData }
     } else {
       return { success: false, message: data.message || 'Registration failed' }
     }

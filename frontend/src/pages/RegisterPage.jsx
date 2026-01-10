@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 
 export default function RegisterPage() {
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -29,7 +31,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const result = await register(email, password, role)
+      const result = await register(firstName, lastName, email, password, role)
 
       if (result.success) {
         navigate('/')
@@ -46,7 +48,7 @@ export default function RegisterPage() {
   return (
     <div style={{ 
       padding: '2rem', 
-      maxWidth: '400px', 
+      maxWidth: '450px', 
       margin: '3rem auto',
       background: 'white',
       borderRadius: '12px',
@@ -68,6 +70,48 @@ export default function RegisterPage() {
       )}
 
       <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+              First Name
+            </label>
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="John"
+              required
+              style={{ 
+                width: '100%', 
+                padding: '0.8rem', 
+                borderRadius: '6px', 
+                border: '1px solid #ccc',
+                fontSize: '1rem'
+              }}
+            />
+          </div>
+          
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+              Last Name
+            </label>
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Doe"
+              required
+              style={{ 
+                width: '100%', 
+                padding: '0.8rem', 
+                borderRadius: '6px', 
+                border: '1px solid #ccc',
+                fontSize: '1rem'
+              }}
+            />
+          </div>
+        </div>
+
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
             Email
