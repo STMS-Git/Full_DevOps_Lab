@@ -1,26 +1,26 @@
 import mongoose from 'mongoose'
 
-// Fonction pour se connecter à MongoDB
+// Function to connect itself to MongoDB
 export const connectDB = async () => {
   try {
-    // Récupérer l'URL de connexion depuis .env
+    // Get the URL connection from .env
     const mongoURI = process.env.MONGODB_URI
 
-    // Se connecter à MongoDB
+    // Connection to MongoDB
     await mongoose.connect(mongoURI)
 
-    // Afficher un message si c'est réussi
+    // Display a message if it was a success
     console.log('✅ MongoDB connecté avec succès !')
     console.log(`📍 Base de données : ${mongoose.connection.name}`)
   } catch (error) {
-    // Afficher l'erreur si ça n'a pas marché
+    // Display the error in case of failure
     console.error('❌ Erreur de connexion à MongoDB :', error.message)
-    // Arrêter le programme s'il y a une erreur
+    // Stop the program in case of failure
     process.exit(1)
   }
 }
 
-// Fonction pour se déconnecter (optionnel mais utile pour les tests)
+// Function to log out
 export const disconnectDB = async () => {
   try {
     await mongoose.disconnect()

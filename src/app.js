@@ -7,7 +7,7 @@ import versionRoute from './routes/auto/version.route.js'
 import infoRoute from './routes/auto/info.route.js'
 import boomRoute from './routes/auto/boom.route.js'
 
-// MongoDB routes (NEW)
+// MongoDB routes
 import facilityRoute from './routes/auto/facility.route.js'
 import coachRoute from './routes/auto/coach.route.js'
 import teamRoute from './routes/auto/team.route.js'
@@ -17,7 +17,7 @@ import authRoute from './routes/auto/auth.route.js'
 
 const app = express()
 
-// CORS - Autoriser les requêtes cross-origin
+// CORS - Allow cross-origin rules
 app.use(cors())
 
 // JSON Middlewares
@@ -45,7 +45,7 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK')
 })
 
-// Routes existantes
+// Existing routes
 app.use('/version', versionRoute)
 app.use('/info', infoRoute)
 app.use('/boom', boomRoute)
@@ -58,7 +58,7 @@ app.use('/matchSessions', matchSessionRoute)
 app.use('/trainingSessions', trainingSessionRoute)
 app.use('/auth', authRoute)
 
-// Global error middleware last
+// Global error middleware lasts
 app.use(errorHandler)
 
 export default app

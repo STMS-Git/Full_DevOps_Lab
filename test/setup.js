@@ -10,7 +10,7 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create()
   const uri = mongoServer.getUri()
 
-  // Fermer toute connexion existante avant de se reconnecter
+  // We close all the existing connections before logging in
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect()
   }

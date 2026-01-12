@@ -38,7 +38,7 @@ router.post('/register', async (req, res, next) => {
       role
     })
 
-    // Générer un token après la création
+    // We generate a token after the creation
     const token = jwt.sign(
       {
         userId: user._id,

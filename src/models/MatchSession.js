@@ -2,21 +2,21 @@ import mongoose from 'mongoose'
 
 const matchSessionSchema = new mongoose.Schema(
   {
-    // Type d'événement
+    // Event type
     eventType: {
       type: String,
-      enum: ['match', 'training'], // Seulement ces deux valeurs
+      enum: ['match', 'training'], // We only allow those values
       default: 'match',
       required: true
     },
 
-    // Date de l'événement
+    // Event date
     eventDate: {
       type: Date,
       required: true
     },
 
-    // Créneau horaire
+    // Slot
     eventSlot: {
       type: String,
       required: true,
@@ -25,28 +25,28 @@ const matchSessionSchema = new mongoose.Schema(
       maxlength: 50
     },
 
-    // Clé étrangère vers Facility
+    // Foreign key related to Facility
     facilityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Facility',
       required: true
     },
 
-    // Clé étrangère vers Coach
+    // Foreign key related to Coach
     coachId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Coach',
       required: true
     },
 
-    // Clé étrangère vers Team
+    // Foreign key related to Team
     teamId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
       required: true
     },
 
-    opponentTeamName: { // équipe adverse
+    opponentTeamName: { // Opponent team
       type: String,
       required: false
     }

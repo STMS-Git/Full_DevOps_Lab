@@ -4,7 +4,7 @@ export const authenticate = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization
 
-    // 1. Check header existence
+    // 1. Check the existence of the header
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         error: true,
@@ -12,10 +12,10 @@ export const authenticate = (req, res, next) => {
       })
     }
 
-    // 2. Extract token
+    // 2. Extract the token
     const token = authHeader.split(' ')[1]
 
-    // 3. Verify token
+    // 3. Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     // 4. Attach user info to request
@@ -24,7 +24,7 @@ export const authenticate = (req, res, next) => {
       role: decoded.role
     }
 
-    // 5. Continue request
+    // 5. Continue the request
     next()
   } catch (err) {
     return res.status(401).json({

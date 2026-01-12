@@ -4,7 +4,7 @@
   -  Refaël Aharouni -> RefaelAharouni
   -  Alfred Abishek Anthony Cruz -> alfred1224-al
 
-# 🏀 STMS - Sports Team Management System
+# STMS - Sports Team Management System
 
 > Full-stack web application for managing sports teams with authentication, role-based access control, and modern interface.
 
@@ -15,15 +15,15 @@
 
 ---
 
-## 🌐 Live Application
+## Live Application
 
-**🎯 Access the application:** [https://stms-application.onrender.com](https://stms-application.onrender.com)
+**Access the application:** [https://stms-application.onrender.com](https://stms-application.onrender.com)
 
-**📡 Backend API:** [https://stms-backend-uoch.onrender.com](https://stms-backend-uoch.onrender.com)
+**Backend API:** [https://stms-backend-uoch.onrender.com](https://stms-backend-uoch.onrender.com)
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [About](#-about)
 - [Features](#-features)
@@ -38,15 +38,15 @@
 
 ---
 
-## 📖 About
+## About
 
 **STMS (Sports Team Management System)** is a full-stack web application designed to efficiently manage sports teams. It provides comprehensive features for managing coaches, teams, sports facilities, matches, and training sessions, with a robust authentication system and role-based permissions.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication & Authorization
+### Authentication & Authorization
 - Secure registration and login (JWT-based)
 - Role management: **Coach** and **Player**
 - Role-based permissions
@@ -55,26 +55,26 @@
 ### 👥 Entity Management
 
 #### For Coaches (full access)
-- ✅ Create, edit, and delete coaches
-- ✅ Manage teams and their members
-- ✅ Add and configure sports facilities
-- ✅ Schedule matches and training sessions
-- ✅ View global statistics
+- Create, edit, and delete coaches
+- Manage teams and their members
+- Add and configure sports facilities
+- Schedule matches and training sessions
+- View global statistics
 
 #### For Players (read-only access)
-- 👁️ View coaches list
-- 👁️ See teams and their compositions
-- 👁️ Access available facilities
-- 👁️ View match and training schedules
+- View coaches list
+- See teams and their compositions
+- Access available facilities
+- View match and training schedules
 
-### 📊 Interactive Dashboard
+### Interactive Dashboard
 - Real-time statistics
 - Data overview
 - Intuitive navigation
 
 ---
 
-## 🛠️ Technologies
+## Technologies
 
 ### Frontend
 - **React 18** - UI Library
@@ -102,7 +102,7 @@
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 
@@ -135,14 +135,14 @@
 
 ---
 
-## 🚀 Local Installation
+## Local Installation
 
 ### Prerequisites
 - Node.js 18+ installed
 - MongoDB Atlas account (or local MongoDB)
 - Git
 
-### 1️⃣ Clone the repository
+### 1️. Clone the repository
 
 ```bash
 git clone https://github.com/STMS-Git/Full_DevOps_Lab.git
@@ -150,14 +150,14 @@ cd Full_DevOps_Lab
 ```
 
 
-### 2️⃣ Install backend dependencies
+### 2. Install backend dependencies
 
 ```bash
 npm install
 ```
 
 
-### 3️⃣ Configure environment variables
+### 3. Configure environment variables
 
 Create a `.env` file at the root:
 
@@ -169,7 +169,7 @@ JWT_SECRET=your_super_long_and_secure_jwt_secret
 ```
 
 
-### 4️⃣ Install frontend dependencies
+### 4. Install frontend dependencies
 
 ```bash
 cd frontend
@@ -178,7 +178,7 @@ cd ..
 ```
 
 
-### 5️⃣ Run the application
+### 5. Run the application
 
 **Terminal 1 - Backend:**
 
@@ -199,7 +199,7 @@ Application opens at `http://localhost:5173`
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Run all tests
 
@@ -237,7 +237,7 @@ All files                       |   94.09 |    92.06 |   97.56 |   94.04
 
 ---
 
-## 🌍 Deployment
+## Deployment
 
 ### Render Configuration
 
@@ -281,13 +281,13 @@ VITE_API_URL=https://stms-backend-uoch.onrender.com
 
 Every push to the `main` branch automatically triggers:
 
-1. ✅ Tests via GitHub Actions
-2. ✅ Frontend and backend build
-3. ✅ Deployment to Render
+1. Tests via GitHub Actions
+2. Frontend and backend build
+3. Deployment to Render
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 Full_DevOps_Lab/
@@ -378,7 +378,7 @@ Full_DevOps_Lab/
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Authentication
 
@@ -440,13 +440,13 @@ Full_DevOps_Lab/
 
 ---
 
-## 👥 Contributors
+## Contributors
 
 - **STMS Team** - Initial development
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - MongoDB Atlas for database hosting
 - Render for application hosting
@@ -454,4 +454,4 @@ Full_DevOps_Lab/
 
 ---
 
-**⭐ If you like this project, don't hesitate to give it a star!**
+**If you like this project, don't hesitate to give it a star!**

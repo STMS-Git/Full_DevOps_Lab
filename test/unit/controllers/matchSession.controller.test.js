@@ -61,7 +61,7 @@ describe('MatchSession Controller - Unit Tests', () => {
       const mockSession = { _id: '123', eventDate: '2026-01-15' }
       req.params.id = '123'
 
-      // ✅ Simule 3 populate() chaînés qui retournent mockSession à la fin
+      // We simulate 3 populate() (in chain) returning the mockSession at the end
       const populateChain3 = { populate: vi.fn().mockResolvedValue(mockSession) }
       const populateChain2 = { populate: vi.fn().mockReturnValue(populateChain3) }
       const populateChain1 = { populate: vi.fn().mockReturnValue(populateChain2) }
@@ -80,7 +80,7 @@ describe('MatchSession Controller - Unit Tests', () => {
     it('should return 404 if match session not found', async () => {
       req.params.id = '999'
 
-      // ✅ Simule 3 populate() chaînés qui retournent null à la fin
+      // We simulate 3 populate() (in chain) returning null at the end
       const populateChain3 = { populate: vi.fn().mockResolvedValue(null) }
       const populateChain2 = { populate: vi.fn().mockReturnValue(populateChain3) }
       const populateChain1 = { populate: vi.fn().mockReturnValue(populateChain2) }

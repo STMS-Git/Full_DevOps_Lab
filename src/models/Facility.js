@@ -1,54 +1,54 @@
 import mongoose from 'mongoose'
 
-// Définir la structure du document Facility
+// We define the structure of the Facility document
 const facilitySchema = new mongoose.Schema(
   {
-    // Champ 1 : name
+    // Field 1: name
     name: {
       type: String,
-      required: true, // Obligatoire
-      unique: true, // Pas deux facilities avec même nom
-      trim: true, // Enlever les espaces avant/après
-      minlength: 3, // Au minimum 3 caractères
-      maxlength: 100 // Au maximum 100 caractères
+      required: true,
+      unique: true, // To avoid two facilities having the same name
+      trim: true, // Delete the spaces before/after
+      minlength: 3, // At least 3 characters
+      maxlength: 100 // At maximum 100 characters
     },
 
-    // Champ 2 : location
+    // Field 2: location
     location: {
       type: String,
       maxlength: 255,
-      default: 'Not specified' // Valeur par défaut
+      default: 'Not specified' // Default value
     },
 
-    // Champ 3 : capacity
+    // Field 3: capacity
     capacity: {
       type: Number,
-      min: 1, // Au minimum 1
-      max: 1000, // Au maximum 1000
-      default: 50 // Par défaut 50
+      min: 1, // At least 1
+      max: 1000, // At maximum 1000
+      default: 50 // Default value
     },
 
-    // Champ 4 : type (indoor/outdoor)
+    // Field 4: type (indoor/outdoor)
     type: {
       type: String,
-      enum: ['indoor', 'outdoor', 'hybrid'], // Seulement ces valeurs
+      enum: ['indoor', 'outdoor', 'hybrid'], // We only allow those values
       default: 'indoor'
     },
 
-    // Champ 5 : createdAt
+    // Field 5: createdAt
     createdAt: {
       type: Date,
-      default: Date.now, // Date actuelle
-      immutable: true // Ne peut pas être changée
+      default: Date.now, // Current date (now)
+      immutable: true // To indicate that it cannot be changed
     }
   },
   {
-    timestamps: true, // Ajoute automatiquement createdAt et updatedAt
-    collection: 'facilities' // Nom de la collection MongoDB
+    timestamps: true, // Automatically add createdAt and updatedAt
+    collection: 'facilities' // MongoDB's collection name
   }
 )
 
-// Créer le modèle (la classe pour interagir avec MongoDB)
+// We create the model (the class to interact with MongoDB)
 const Facility = mongoose.model('Facility', facilitySchema)
 
 export default Facility

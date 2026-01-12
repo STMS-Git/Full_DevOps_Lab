@@ -118,17 +118,17 @@ describe('Team Controller - Unit Tests', () => {
 
       req.body = teamData
 
-      // ✅ CORRECTION : populate() doit modifier l'objet en place
+      // populate() must edit the current object
       const mockTeam = {
         ...teamData,
         save: vi.fn(async function () {
-          // save ajoute l'_id
+          // save adds _id
           this._id = '456'
           return this
         }),
         populate: vi.fn(async function () {
-          // populate modifie l'objet en place en Mongoose
-          // On copie toutes les propriétés de savedTeam dans this
+          // populate modifies the current Mongoose object
+          // We copy all the savedTeam properties in this
           Object.keys(savedTeam).forEach(key => {
             this[key] = savedTeam[key]
           })

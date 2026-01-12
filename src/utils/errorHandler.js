@@ -3,7 +3,7 @@
  * Ensures consistent JSON error shape across the API.
  */
 export function errorHandler (err, _req, res, _next) {
-  // Erreur de validation Mongoose
+  // Mangoose validation error
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
@@ -11,7 +11,7 @@ export function errorHandler (err, _req, res, _next) {
       details: Object.values(err.errors).map(e => e.message)
     })
   }
-  // Erreur de duplication (code 11000)
+  // Duplicate error (code 11000)
   if (err.code === 11000) {
     return res.status(409).json({
       success: false,
@@ -19,14 +19,14 @@ export function errorHandler (err, _req, res, _next) {
       field: Object.keys(err.keyPattern)[0]
     })
   }
-  // ID Mongoose invalide
+  // Invalid Mangoose ID
   if (err.name === 'CastError') {
     return res.status(400).json({
       success: false,
       message: 'Invalid ID format'
     })
   }
-  // Erreur générique
+  // Generic error
   const status = err?.status ?? 500
   const message = err?.message ?? 'Internal Server Error'
   res.status(status).json({ success: false, message })

@@ -87,7 +87,7 @@ export default function HomePage() {
     )
   }
 
-  // Affichage selon le rôle
+  // Display according to the user's role
   const isCoach = user?.role === 'coach'
   const isPlayer = user?.role === 'player'
 
@@ -99,7 +99,7 @@ export default function HomePage() {
       background: '#f5f5f5',
       minHeight: 'calc(100vh - 150px)'
     }}>
-      {/* Header avec message personnalisé */}
+      {/* Header with a customized message */}
       <div style={{ 
         background: isCoach 
           ? 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)'
@@ -124,7 +124,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Statistiques - Différentes selon le rôle */}
+      {/* Statistics - Different according to the role */}
       {isCoach && (
         <div style={{ 
           display: 'grid', 
@@ -232,13 +232,13 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Prochains événements */}
+      {/* Next events */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', 
         gap: '1.5rem'
       }}>
-        {/* Prochains matches */}
+        {/* Next matches */}
         <div style={{ 
           background: 'white', 
           padding: '1.5rem',
@@ -298,7 +298,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Prochains entraînements */}
+        {/* Next trainings */}
         <div style={{ 
           background: 'white', 
           padding: '1.5rem',
@@ -380,7 +380,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Quick Actions - Uniquement pour les Coaches */}
+      {/* Quick Actions - Only for coaches */}
       {isCoach && (
         <div style={{ 
           background: 'white',
@@ -404,7 +404,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Message pour les Players */}
+      {/* Message for the players */}
       {isPlayer && (
         <div style={{ 
           background: 'white',
@@ -449,7 +449,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Invitation à se connecter */}
+      {/* Invitation to log in */}
       {!user && (
         <div style={{ 
           background: 'white',
@@ -493,7 +493,7 @@ export default function HomePage() {
   )
 }
 
-// Composants
+// Components
 function StatCard({ icon, title, count, color, link }) {
   return (
     <Link to={link} style={{ textDecoration: 'none' }}>

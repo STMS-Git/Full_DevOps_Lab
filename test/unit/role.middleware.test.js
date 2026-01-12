@@ -6,10 +6,10 @@ describe('role.middleware', () => {
   let req, res, next
 
   beforeEach(() => {
-    // Mock de la requête
+    // We mock the request
     req = { user: null }
 
-    // Mock de la réponse
+    // We mock the answer
     res = {
       status: function (code) {
         this.statusCode = code
@@ -21,7 +21,7 @@ describe('role.middleware', () => {
       }
     }
 
-    // Mock de next()
+    // We mock next()
     next = () => {}
   })
 

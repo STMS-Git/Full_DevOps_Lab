@@ -1,6 +1,6 @@
 export const requireRole = (role) => {
   return (req, res, next) => {
-    // Safety check: authenticate middleware must run first
+    // Safety check: the authentication middleware must run first
     if (!req.user) {
       return res.status(401).json({
         error: true,
@@ -8,7 +8,7 @@ export const requireRole = (role) => {
       })
     }
 
-    // Check role
+    // We check the role
     if (req.user.role !== role) {
       return res.status(403).json({
         error: true,

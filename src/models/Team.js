@@ -30,7 +30,7 @@ const teamSchema = new mongoose.Schema(
       max: new Date().getFullYear()
     },
 
-    // Clé étrangère vers Coach
+    // Foreign key to Coach
     coachId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Coach',

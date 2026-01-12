@@ -22,8 +22,8 @@ const coachSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true, // Convertir en minuscules
-      match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Validation email basique
+      lowercase: true, // Conversion to lowercases
+      match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ // Basic email validation
     },
 
     specialization: {
@@ -33,7 +33,7 @@ const coachSchema = new mongoose.Schema(
     },
 
     experience: {
-      type: Number, // Années d'expérience
+      type: Number, // Experience (in years)
       min: 0,
       max: 70,
       default: 0

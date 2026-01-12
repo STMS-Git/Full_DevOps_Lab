@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const trainingSessionSchema = new mongoose.Schema(
   {
-    // Type d'événement
+    // Event type
     eventType: {
       type: String,
       enum: ['training'],
@@ -10,13 +10,13 @@ const trainingSessionSchema = new mongoose.Schema(
       required: true
     },
 
-    // Date de la séance
+    // Event date
     eventDate: {
       type: Date,
       required: true
     },
 
-    // Créneau horaire (ex: "14h00-15h30")
+    // Slot (e.g. "14h00-15h30")
     eventSlot: {
       type: String,
       required: true,
@@ -25,50 +25,50 @@ const trainingSessionSchema = new mongoose.Schema(
       maxlength: 50
     },
 
-    // Durée en minutes
+    // Duration (in minutes)
     duration: {
       type: Number,
-      min: 30, // Minimum 30 minutes
-      max: 240, // Maximum 4 heures
+      min: 30, // At least 30 minutes
+      max: 240, // At maximum 4 hours
       required: true
     },
 
-    // Niveau/Focus de la séance
+    // Event's level
     trainingLevel: {
       type: String,
       enum: ['beginner', 'intermediate', 'advanced'],
       default: 'intermediate'
     },
 
-    // Type d'entraînement
+    // Training type
     trainingType: {
       type: String,
       enum: ['technical', 'tactical', 'physical', 'mixed'],
       default: 'mixed'
     },
 
-    // Clé étrangère vers Facility
+    // Foreign key related to Facility
     facilityId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Facility',
       required: true
     },
 
-    // Clé étrangère vers Coach
+    // Foreign key related to Coach
     coachId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Coach',
       required: true
     },
 
-    // Clé étrangère vers Team
+    // Foreign key related to Team
     teamId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Team',
       required: true
     },
 
-    // Nombre maximum de participants
+    // Maximum number of participants
     maxParticipants: {
       type: Number,
       min: 1,
@@ -76,13 +76,13 @@ const trainingSessionSchema = new mongoose.Schema(
       default: 25
     },
 
-    // Description de l'entraînement
+    // Event's description
     description: {
       type: String,
       maxlength: 500
     },
 
-    // Obligatoire ou optionnel
+    // Mandatory or optional
     isMandatory: {
       type: Boolean,
       default: false

@@ -55,7 +55,7 @@ export async function createMatch (req, res, next) {
       })
     }
 
-    // Verify team exists
+    // We verify that the team exists
     const team = await Team.findById(teamId)
     if (!team) {
       return res.status(404).json({
@@ -64,7 +64,7 @@ export async function createMatch (req, res, next) {
       })
     }
 
-    // Verify facility exists
+    // We verify that the facility exists
     const facility = await Facility.findById(facilityId)
     if (!facility) {
       return res.status(404).json({
@@ -73,7 +73,7 @@ export async function createMatch (req, res, next) {
       })
     }
 
-    // Verify coach exists
+    // We verify that the coach exists
     const coach = await Coach.findById(coachId)
     if (!coach) {
       return res.status(404).json({
@@ -82,7 +82,7 @@ export async function createMatch (req, res, next) {
       })
     }
 
-    // Create match session
+    // We create the match session
     const match = new MatchSession({
       eventDate,
       eventSlot,

@@ -84,7 +84,7 @@ describe('MatchSession CRUD Operations', () => {
 
       expect(response.body.success).toBe(true)
       expect(response.body.data.eventSlot).toBe('afternoon')
-      expect(response.body.data.eventType).toBe('match') // Vérifier la valeur par défaut
+      expect(response.body.data.eventType).toBe('match') // Check the default value
       expect(response.body.data.facilityId._id).toBe(facilityId)
       matchSessionId = response.body.data._id
     })

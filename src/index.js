@@ -1,17 +1,17 @@
-import 'dotenv/config' // Charger les variables .env
+import 'dotenv/config' // We load .env features
 import app from './app.js'
 import { connectDB } from './config/database.js'
 
 const PORT = process.env.PORT || 3000
 
-// Fonction async pour pouvoir utiliser await
+// Async function, so that we can use await
 const startServer = async () => {
   try {
-    // 1. D'abord, se connecter à MongoDB
+    // 1. Connection to MongoDB
     console.log('🔌 Connexion à MongoDB...')
     await connectDB()
 
-    // 2. Ensuite, démarrer le serveur
+    // 2. Run the servor
     app.listen(PORT, () => {
       console.log(`
 ╔════════════════════════════════════════╗
@@ -28,5 +28,5 @@ const startServer = async () => {
   }
 }
 
-// Lancer la fonction
+// Call the function
 startServer()

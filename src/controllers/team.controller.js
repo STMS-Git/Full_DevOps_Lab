@@ -56,7 +56,7 @@ export async function createTeam (req, res, next) {
       })
     }
 
-    // Créer la nouvelle équipe
+    // We create the new team
     const team = new Team({
       name,
       sport,
