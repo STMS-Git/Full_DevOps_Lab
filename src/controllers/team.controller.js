@@ -48,7 +48,7 @@ export async function createTeam (req, res, next) {
       isActive = true
     } = req.body
 
-    // Validation basique
+    // Basic validation (we check that the name and the sport exist)
     if (!name || !sport) {
       return res.status(400).json({
         success: false,
@@ -66,10 +66,10 @@ export async function createTeam (req, res, next) {
       isActive
     })
 
-    // Sauvegarder dans MongoDB
+    // We save the new team in MongoDB
     await team.save()
 
-    // Remplir la référence coachId
+    // We fill in the coachID reference
     await team.populate('coachId')
 
     res.status(201).json({
